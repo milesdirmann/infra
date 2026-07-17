@@ -48,8 +48,8 @@ mount_one() { # remote:path  mountpoint  volname
   run_capped() { "$@" 2>/dev/null & local p=$!
     ( sleep 15; kill -9 "$p" 2>/dev/null ) & local w=$!
     wait "$p" 2>/dev/null; kill "$w" 2>/dev/null; }
-  run_capped umount -f "$2"
-  is_mounted "$2" && run_capped diskutil unmount force "$2"
+  run_capped umount -f "$2" || true
+  if is_mounted "$2"; then run_capped diskutil unmount force "$2" || true; fi
   pkill -f "rclone nfsmount.*$2 " 2>/dev/null || true
   sleep 1
   # -o nobrowse: hide from Finder Locations/desktop — no "localhost", no eject;
