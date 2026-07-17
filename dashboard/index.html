@@ -63,7 +63,7 @@
 
 <h1>Infrastructure — Source of Truth</h1>
 <p class="sub">Lives in <span class="mono">milesdirmann/projects · dashboard/index.html</span>.
-Update it in the repo; <span class="mono">git pull</span> refreshes this page. Last edit: <b>2026-07-17</b></p>
+Update it in the repo; <span class="mono">git pull</span> refreshes this page. Last edit: <b>2026-07-16</b></p>
 
 <h2>Fleet</h2>
 <div class="grid">
@@ -130,8 +130,8 @@ everything else is on the Storage Box, and nothing irreplaceable was on the Mac.
   <tr><td>Resume tmux</td><td class="mono">ssh root@89.167.110.196 -t tmux new -A -s main</td></tr>
   <tr><td>Port-forward a dev server</td><td class="mono">ssh -L 3000:localhost:3000 root@89.167.110.196</td></tr>
   <tr><td>SSH → Storage Box</td><td class="mono">ssh -p 23 u634219@u634219.your-storagebox.de</td></tr>
-  <tr><td>Mountain Duck · CX33</td><td>SFTP · 89.167.110.196 · port 22 · Smart Sync on</td></tr>
-  <tr><td>Mountain Duck · cold-storage</td><td>SFTP · u634219.your-storagebox.de · port 23 · Smart Sync on</td></tr>
+  <tr><td>Finder folders (rclone nfsmount)</td><td class="mono">~/Hetzner/Server (CX33) + ~/Hetzner/Storage (box) · nobrowse · auto-mount via launchd</td></tr>
+  <tr><td>Remount by hand</td><td class="mono">bash tools/mac/mount-hetzner.sh mount | unmount | status</td></tr>
   <tr><td>rclone remotes</td><td class="mono">cpx: → CX33 · sbox: → Storage Box (see tools/mac/mount-hetzner.sh)</td></tr>
   <tr><td>Backup log (on CX33)</td><td class="mono">tail /var/log/hetzner-backup.log</td></tr>
 </table>
@@ -146,8 +146,8 @@ everything else is on the Storage Box, and nothing irreplaceable was on the Mac.
   <label class="check"><input type="checkbox" data-k="rsync"><span>rsync vital data CPX31 → CX33</span></label>
   <label class="check"><input type="checkbox" data-k="cold"><span>rclone cold data CPX31 → Storage Box</span></label>
   <label class="check"><input type="checkbox" data-k="backup"><span>Install hourly backup timer on CX33, verify first run in log</span></label>
-  <label class="check"><input type="checkbox" data-k="repoint"><span>Re-point Mountain Duck, VS Code Remote-SSH, DNS → CX33</span></label>
-  <label class="check"><input type="checkbox" data-k="mduck"><span>Mountain Duck: both bookmarks pinned in Finder, Smart Sync verified</span></label>
+  <label class="check"><input type="checkbox" data-k="repoint"><span>Re-point VS Code Remote-SSH, DNS → CX33</span></label>
+  <label class="check"><input type="checkbox" data-k="mduck"><span>Finder mounts (rclone nfsmount): both volumes verified + launchd auto-mount loaded ✓ done 2026-07-16</span></label>
   <label class="check"><input type="checkbox" data-k="cooloff"><span>One-week cool-off working only from CX33</span></label>
   <label class="check"><input type="checkbox" data-k="delete"><span>Delete CPX31 (~$25/mo saved) — keep snapshot 2 weeks</span></label>
   <label class="check"><input type="checkbox" data-k="vscode"><span>VS Code audit: run <span class="mono">tools/vscode-audit.sh</span>, prune extensions for 8GB server</span></label>
@@ -157,10 +157,10 @@ everything else is on the Storage Box, and nothing irreplaceable was on the Mac.
 <table>
   <tr><th>File</th><th>Purpose</th></tr>
   <tr><td class="mono"><a href="../docs/migration-cpx31-to-cx33.md">docs/migration-cpx31-to-cx33.md</a></td><td>Full migration + decommission runbook</td></tr>
-  <tr><td class="mono"><a href="../docs/finder-remote-volumes.md">docs/finder-remote-volumes.md</a></td><td>Finder integration: Mountain Duck (primary) / rclone (fallback)</td></tr>
+  <tr><td class="mono"><a href="../docs/finder-remote-volumes.md">docs/finder-remote-volumes.md</a></td><td>Finder integration: rclone nfsmount (free, chosen) / Mountain Duck (paid, skipped)</td></tr>
   <tr><td class="mono">tools/server/cpx31-audit.sh</td><td>Inventory CPX31 before triage</td></tr>
   <tr><td class="mono">tools/server/rclone-backup.sh + .service/.timer</td><td>Hourly server → Storage Box mirror</td></tr>
-  <tr><td class="mono">tools/mac/mount-hetzner.sh</td><td>Free fallback Finder mounts (rclone nfsmount)</td></tr>
+  <tr><td class="mono">tools/mac/mount-hetzner.sh</td><td>Finder mounts (rclone nfsmount) — the chosen integration, installed + auto-mounting</td></tr>
   <tr><td class="mono">tools/vscode-audit.sh</td><td>Dump VS Code config for optimization review</td></tr>
 </table>
 

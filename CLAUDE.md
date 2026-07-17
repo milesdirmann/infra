@@ -27,16 +27,20 @@ all scripts are written but unrun. Order:
 2. `tools/server/cpx31-audit.sh` on CPX31 → triage inventory (paste to Claude)
 3. Snapshot CPX31 → rsync vital→CX33, rclone cold→Storage Box
 4. Backup timer (`tools/server/hetzner-backup.*`) on CX33
-5. Mountain Duck bookmarks (docs/finder-remote-volumes.md — Option A) on Mac
+5. ~~Finder mounts on Mac~~ DONE 2026-07-16 (rclone nfsmount + launchd, not Mountain Duck)
 6. Cool-off week → delete CPX31
 7. Pending separately: VS Code config review — run `tools/vscode-audit.sh` on
    the Mac and give the output to Claude to prune extensions for the 8GB box
 
 ## Key decisions already made (don't relitigate)
 
-- Finder integration: **Mountain Duck** (File Provider: cloud badges,
-  online-only files) over rclone mounts; rclone nfsmount kit kept as free
-  fallback in `tools/mac/`. Homebrew's macOS rclone has no `mount` — use `nfsmount`.
+- Finder integration: **rclone nfsmount** (free, `tools/mac/`) — chosen
+  2026-07-16 over Mountain Duck ($40) to avoid spend. Installed and working:
+  `~/Hetzner/Server` (CX33) + `~/Hetzner/Storage` (box), mounted `nobrowse` so
+  they behave like plain local folders (no localhost/eject in Finder); launchd
+  agent auto-mounts at login and self-heals every 5 min. Full read caching
+  (5G) hides the Helsinki latency. Mountain Duck remains the paid upgrade if
+  cloud badges/offline-pinning are ever wanted. Use `nfsmount`, not `mount`.
 - Backups: rclone hourly mirror now; upgrade path is BorgBackup (Storage Box
   supports it natively) if history/scale grows. No custom Rust sync — network-bound.
 - Storage Box: SSH + External Reachability ON, SMB/WebDAV OFF, port 23.

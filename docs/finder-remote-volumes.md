@@ -1,13 +1,16 @@
 # Hetzner drives in the macOS Finder sidebar
 
-Two Finder locations, like Dropbox/Google Drive but self-hosted:
+Two plain folders under `~/Hetzner/`, like Dropbox/Google Drive but self-hosted:
 
-| Volume | Backed by | Use |
+| Folder | Backed by | Use |
 |---|---|---|
-| **CPX-Projects** | VPS local NVMe (live code) | Drag files in/out of active projects |
-| **Hetzner-Storage** | 1TB Storage Box (~€4/mo) | Archives, assets, backups |
+| **~/Hetzner/Server** | CX33 NVMe, `/root/projects` (live code) | Drag files in/out of active projects |
+| **~/Hetzner/Storage** | 1TB Storage Box (~€4/mo) | Archives, assets, backups |
 
-Rename either by setting `VOL_VPS` / `VOL_SBOX` before mounting (e.g. `VOL_VPS=CPX31`).
+Mounted with `nobrowse`, so nothing shows under Finder's Locations — no
+"localhost" host entry, no eject buttons, no "Connected as: NFS" banner. They
+look and act like normal local folders. Rename by setting `VOL_VPS` /
+`VOL_SBOX` before mounting.
 
 ## Step 0 — Buy the Storage Box (manual, ~2 min)
 
@@ -21,7 +24,25 @@ ssh-copy-id -p 23 uXXXXXX@uXXXXXX.your-storagebox.de
 
 ## Step 1 — Mac setup
 
-### Option A (recommended): Mountain Duck — full Dropbox/Drive-style UX
+### Option A (CHOSEN 2026-07-16, free): rclone nfsmount
+
+Plain folders — files stream on demand with a 5G local read cache (repeat
+opens are instant), but no cloud badges or offline-pinning menu. Installed
+and verified on Miles' Mac:
+
+```bash
+brew install rclone
+bash tools/mac/mount-hetzner.sh configure   # writes cpx: + sbox: remotes
+bash tools/mac/mount-hetzner.sh mount       # mounts both under ~/Hetzner
+```
+
+A Finder window opens at ~/Hetzner — drag Server/Storage (or the ~/Hetzner
+parent) into the sidebar Favorites once and macOS keeps them pinned.
+Auto-mount at login is installed via
+`~/Library/LaunchAgents/com.hetzner.mounts.plist` (re-checks every 5 min,
+self-heals dropped mounts after sleep/wake).
+
+### Option B (paid upgrade, skipped for now): Mountain Duck — full Dropbox/Drive-style UX
 
 The cloud badges, per-file download buttons, and right-click
 "Make available offline" / "online only" menus are Apple File Provider
@@ -44,22 +65,6 @@ Use your SSH key for auth on both. Both appear under Finder's Locations with
 cloud icons: files are online-only by default (zero Mac disk), click/open to
 download, right-click for Keep Offline / Remove Local Copy.
 
-### Option B (free fallback): rclone nfsmount
-
-Plain Finder volumes — files stream on demand and never consume Mac disk, but
-no badges or offline-pinning menu:
-
-```bash
-brew install rclone
-# edit the 4 host/user lines at the top of tools/mac/mount-hetzner.sh, then:
-bash tools/mac/mount-hetzner.sh configure
-bash tools/mac/mount-hetzner.sh mount
-```
-
-A Finder window opens with both volumes — drag each into the sidebar once and
-macOS keeps them pinned. Auto-mount at login: see the comment in
-`tools/mac/com.hetzner.mounts.plist`.
-
 ## Step 2 — VPS one-time setup (backup mirror)
 
 Follow the comments in `tools/server/rclone-backup.sh`. Result: every hour the
@@ -79,6 +84,10 @@ replaces Step 1 with zero scripts.
 ## Gotchas
 
 - Storage Box SFTP runs on **port 23**, not 22.
+- Storage Box paths must be **home-relative** (`sbox:`), never absolute
+  (`sbox:/`) — the chroot denies listing `/` (found the hard way 2026-07-16).
+- On the CX33 the projects dir is `/root/projects` (root's home is `/root`,
+  not `/home/root`).
 - Don't point compilers/IDEs at the mounted volumes — that's what Remote-SSH
   is for. The mounts are for browsing and moving files.
 - If Finder feels slow on huge directories, raise `--dir-cache-time`.

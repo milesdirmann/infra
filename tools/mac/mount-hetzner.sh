@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Mount Hetzner locations as Finder volumes via rclone nfsmount (no FUSE needed).
-# NOTE: this is the FREE fallback. For Dropbox-style Finder integration
-# (cloud badges, online-only files, right-click offline pinning) use
-# Mountain Duck instead — see docs/finder-remote-volumes.md.
+# This is THE Finder integration (chosen 2026-07-16, free). Mountain Duck is
+# the optional paid upgrade if cloud badges / offline pinning are ever wanted
+# — see docs/finder-remote-volumes.md.
 #
 # One-time Mac setup:
 #   brew install rclone   # Homebrew's rclone has no `mount` on macOS; we use `nfsmount`
@@ -16,11 +16,12 @@ VPS_HOST="${VPS_HOST:-89.167.110.196}"          # cx33-server, Helsinki
 VPS_USER="${VPS_USER:-root}"
 SBOX_HOST="${SBOX_HOST:-u634219.your-storagebox.de}"  # cold-storage BX11
 SBOX_USER="${SBOX_USER:-u634219}"
+VPS_PATH="${VPS_PATH:-/root/projects}"  # live projects dir on the VPS
 # -----------------------------------------------------------
 
-VOL_VPS="${VOL_VPS:-CX33-Projects}"     # Finder sidebar name for live VPS projects
-VOL_SBOX="${VOL_SBOX:-Cold-Storage}"    # Finder sidebar name for the 1TB Storage Box
-MNT_BASE="$HOME/HetznerDrives"
+VOL_VPS="${VOL_VPS:-Server}"       # folder name for live VPS projects
+VOL_SBOX="${VOL_SBOX:-Storage}"    # folder name for the 1TB Storage Box
+MNT_BASE="$HOME/Hetzner"
 
 configure() {
   rclone config create cpx sftp host "$VPS_HOST" user "$VPS_USER" key_file "$HOME/.ssh/id_ed25519"
@@ -29,7 +30,8 @@ configure() {
   echo "Remotes written. Test with: rclone lsd cpx: && rclone lsd sbox:"
 }
 
-is_mounted() { mount | grep -qF " on $1 "; }
+# capture mount output first: `mount | grep -q` can flake under pipefail (SIGPIPE)
+is_mounted() { local m; m=$(mount); grep -qF " on $1 " <<<"$m"; }
 
 mount_one() { # remote:path  mountpoint  volname
   mkdir -p "$2"
@@ -39,10 +41,16 @@ mount_one() { # remote:path  mountpoint  volname
     echo "$3 mount is stale; remounting"
     umount -f "$2" 2>/dev/null || diskutil unmount force "$2" 2>/dev/null || true
   fi
+  # -o nobrowse: hide from Finder Locations/desktop — no "localhost", no eject;
+  # the mountpoint behaves like a plain local folder.
+  # vfs-cache-mode full: cache read data locally so repeat opens are instant
+  # despite the transatlantic round-trip.
   rclone nfsmount "$1" "$2" \
     --volname "$3" \
-    --vfs-cache-mode writes \
-    --vfs-cache-max-size 2G \
+    -o nobrowse \
+    --vfs-cache-mode full \
+    --vfs-cache-max-size 5G \
+    --vfs-read-ahead 64M \
     --dir-cache-time 30s \
     --sftp-idle-timeout 0 \
     --timeout 30s --contimeout 15s --retries 3 \
@@ -53,8 +61,9 @@ mount_one() { # remote:path  mountpoint  volname
 case "${1:-mount}" in
   configure) configure ;;
   mount)
-    mount_one "cpx:/home/$VPS_USER/projects" "$MNT_BASE/$VOL_VPS"  "$VOL_VPS"
-    mount_one "sbox:/"                        "$MNT_BASE/$VOL_SBOX" "$VOL_SBOX"
+    mount_one "cpx:$VPS_PATH" "$MNT_BASE/$VOL_VPS"  "$VOL_VPS"
+    # NB: "sbox:" (login home), not "sbox:/" — the Storage Box chroot denies listing "/"
+    mount_one "sbox:"                         "$MNT_BASE/$VOL_SBOX" "$VOL_SBOX"
     open "$MNT_BASE"   # drag the two volumes into the Finder sidebar once; macOS remembers
     ;;
   unmount)
