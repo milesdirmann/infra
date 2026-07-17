@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Auto-mount Hetzner volumes at login.
+     Install:  cp tools/mac/com.hetzner.mounts.plist ~/Library/LaunchAgents/
+               launchctl load ~/Library/LaunchAgents/com.hetzner.mounts.plist
+     Edit the path below to where this repo lives on your Mac. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.hetzner.mounts</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/YOURNAME/projects/tools/mac/mount-hetzner.sh</string>
+    <string>mount</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>StandardErrorPath</key><string>/tmp/hetzner-mounts.err</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>

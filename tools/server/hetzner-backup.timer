@@ -1,0 +1,10 @@
+[Unit]
+Description=Hourly mirror of projects to Hetzner Storage Box
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

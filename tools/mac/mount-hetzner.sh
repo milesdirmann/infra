@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Mount Hetzner locations as Finder volumes via rclone + FUSE-T (kext-free).
+#
+# One-time Mac setup:
+#   brew install rclone
+#   brew install --cask fuse-t          # kext-free FUSE, no security-settings dance
+#   bash tools/mac/mount-hetzner.sh configure   # writes the rclone remotes
+#
+# Then: bash tools/mac/mount-hetzner.sh mount | unmount | status
+set -euo pipefail
+
+# ---- edit these three lines ----
+VPS_HOST="${VPS_HOST:-your_hetzner_ip}"        # CPX server IP or ssh alias
+VPS_USER="${VPS_USER:-dev}"
+SBOX_HOST="${SBOX_HOST:-uXXXXXX.your-storagebox.de}"  # from Hetzner console
+SBOX_USER="${SBOX_USER:-uXXXXXX}"
+# --------------------------------
+
+VOL_VPS="${VOL_VPS:-CPX-Projects}"     # Finder sidebar name for live VPS projects
+VOL_SBOX="${VOL_SBOX:-Hetzner-Storage}" # Finder sidebar name for the 1TB Storage Box
+MNT_BASE="$HOME/HetznerDrives"
+
+configure() {
+  rclone config create cpx sftp host "$VPS_HOST" user "$VPS_USER" key_file "$HOME/.ssh/id_ed25519"
+  # Storage Box speaks SFTP on port 23
+  rclone config create sbox sftp host "$SBOX_HOST" user "$SBOX_USER" port 23 key_file "$HOME/.ssh/id_ed25519"
+  echo "Remotes written. Test with: rclone lsd cpx: && rclone lsd sbox:"
+}
+
+mount_one() { # remote:path  mountpoint  volname
+  mkdir -p "$2"
+  mountpoint -q "$2" 2>/dev/null && { echo "$3 already mounted"; return; }
+  rclone mount "$1" "$2" \
+    --volname "$3" \
+    --vfs-cache-mode writes \
+    --vfs-cache-max-size 2G \
+    --dir-cache-time 30s \
+    --daemon
+  echo "Mounted $3 at $2"
+}
+
+case "${1:-mount}" in
+  configure) configure ;;
+  mount)
+    mount_one "cpx:/home/$VPS_USER/projects" "$MNT_BASE/$VOL_VPS"  "$VOL_VPS"
+    mount_one "sbox:/"                        "$MNT_BASE/$VOL_SBOX" "$VOL_SBOX"
+    open "$MNT_BASE"   # drag the two volumes into the Finder sidebar once; macOS remembers
+    ;;
+  unmount)
+    umount "$MNT_BASE/$VOL_VPS"  2>/dev/null || true
+    umount "$MNT_BASE/$VOL_SBOX" 2>/dev/null || true
+    echo "Unmounted."
+    ;;
+  status)
+    mount | grep -E "$VOL_VPS|$VOL_SBOX" || echo "Nothing mounted."
+    ;;
+  *) echo "usage: $0 {configure|mount|unmount|status}"; exit 1 ;;
+esac
