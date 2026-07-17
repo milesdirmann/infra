@@ -10,7 +10,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
-    <string>/Users/milesdirmann/projects-infra/tools/mac/mount-hetzner.sh</string>
+    <string>/Users/milesdirmann/infra/tools/mac/mount-hetzner.sh</string>
     <string>mount</string>
   </array>
   <key>RunAtLoad</key><true/>

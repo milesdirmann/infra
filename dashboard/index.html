@@ -4,82 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>INFRA / Source of Truth</title>
+<link rel="stylesheet" href="../brand/os.css">
 <style>
-  @font-face {
-    font-family: 'Geist';
-    src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
-    font-weight: 100 900; font-display: swap;
-  }
-  @font-face {
-    font-family: 'Geist Mono';
-    src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
-    font-weight: 100 900; font-display: swap;
-  }
-
-  :root {
-    --paper: #FAFAF8;
-    --panel: #FFFFFF;
-    --ink: #101014;
-    --muted: #71717A;
-    --faint: #A1A1AA;
-    --line: #E5E5E1;
-    --line-dark: #18181B;
-    --go: #17803D;
-    --hold: #A16207;
-    --stop: #B3261E;
-    --sans: 'Geist', -apple-system, 'Helvetica Neue', sans-serif;
-    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { -webkit-font-smoothing: antialiased; }
-  body {
-    font-family: var(--sans);
-    background: var(--paper);
-    color: var(--ink);
-    font-size: 15px;
-    line-height: 1.55;
-  }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px 96px; }
-
-  a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--faint); }
-  a:hover { text-decoration-color: var(--ink); }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-
-  .eyebrow {
-    font-family: var(--mono); font-size: 11px; font-weight: 500;
-    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
-  }
-  .mono { font-family: var(--mono); font-size: 0.92em; }
-
-  /* ---------- masthead ---------- */
-  header { padding: 56px 0 0; }
-  .mast-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-  h1 {
-    font-size: clamp(38px, 6vw, 58px); font-weight: 560;
-    letter-spacing: -0.035em; line-height: 1.02; margin-top: 10px;
-  }
-  .mast-sub { color: var(--muted); max-width: 560px; margin-top: 14px; font-size: 15px; }
-
-  .strip {
-    margin-top: 36px; border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line);
-    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 0;
-  }
-  .strip > div { padding: 14px 20px 16px; border-left: 1px solid var(--line); }
-  .strip > div:first-child { border-left: 0; padding-left: 0; }
-  .strip .val { font-family: var(--mono); font-size: 15px; margin-top: 4px; display: block; }
-  .bar { height: 3px; background: var(--line); margin-top: 10px; position: relative; }
-  .bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); width: 0%; transition: width .4s ease; }
-
-  /* ---------- sections ---------- */
-  section { margin-top: 72px; }
-  .sec-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    border-top: 1px solid var(--line-dark); padding-top: 12px; margin-bottom: 26px;
-  }
-  .sec-head h2 { font-size: 19px; font-weight: 560; letter-spacing: -0.015em; }
-
-  /* ---------- topology ---------- */
+  /* ---------- topology (page specific) ---------- */
   .schematic { border: 1px solid var(--line); background: var(--panel); padding: 8px; overflow-x: auto; }
   .schematic svg { display: block; width: 100%; height: auto; min-width: 720px; }
   .sch-note { font-size: 13px; color: var(--muted); margin-top: 12px; }
@@ -99,24 +26,7 @@
   @keyframes flow { to { stroke-dashoffset: -22; } }
   @media (prefers-reduced-motion: reduce) { .link-live { animation: none; } }
 
-  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
-  .dot.go { background: var(--go); } .dot.hold { background: var(--hold); } .dot.stop { background: var(--stop); }
-
-  /* ---------- tables ---------- */
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th {
-    text-align: left; font-family: var(--mono); font-size: 10.5px; font-weight: 500;
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
-    padding: 0 16px 10px 0; border-bottom: 1px solid var(--line-dark);
-  }
-  td { padding: 13px 16px 13px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  tr:last-child td { border-bottom: 0; }
-  td.m { font-family: var(--mono); font-size: 13px; }
-  td .sub { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
-
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
-
-  /* ---------- migration ---------- */
+  /* ---------- migration (page specific) ---------- */
   .seq { counter-reset: step; }
   .step { display: flex; gap: 18px; padding: 15px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
   .step:last-child { border-bottom: 0; }
@@ -134,26 +44,7 @@
   .step.done label { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--faint); }
   .step.done .tag { text-decoration: none; }
 
-  .gate {
-    margin-top: 30px; border: 1px solid var(--line-dark); background: var(--panel); padding: 22px 26px;
-  }
-  .gate h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
-  .gate ul { list-style: none; }
-  .gate li { padding: 5px 0; font-size: 14px; color: var(--muted); }
-  .gate li::before { content: '::'; font-family: var(--mono); color: var(--faint); margin-right: 10px; }
-
-  footer {
-    margin-top: 88px; border-top: 1px solid var(--line-dark); padding-top: 16px;
-    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
-  }
-
-  @media (max-width: 860px) {
-    .wrap { padding: 0 20px 64px; }
-    .strip { grid-template-columns: 1fr 1fr; }
-    .strip > div { border-left: 0; padding-left: 0; }
-    .cols { grid-template-columns: 1fr; gap: 48px; }
-  }
+  .gate { margin-top: 30px; }
 </style>
 </head>
 <body>
@@ -161,13 +52,13 @@
 
 <header>
   <div class="mast-top">
-    <span class="eyebrow">INFRA 001 / Source of Truth</span>
+    <span class="eyebrow">Personal OS / Infra 001</span>
     <span class="eyebrow">milesdirmann/infra</span>
   </div>
   <h1>Infrastructure</h1>
-  <p class="mast-sub">One operator, one server, one storage tier. Compute bursts to Modal,
-  nothing vital lives on the Mac. This page is generated from the repo: update it there,
-  <span class="mono">git pull</span> refreshes it here.</p>
+  <p class="mast-sub">The standing source of truth for machines, data, and the principles
+  behind both, personal and professional. Always current, updated in the repo,
+  <span class="mono">git pull</span> refreshes it here. First page of the Personal OS.</p>
 
   <div class="strip">
     <div>
@@ -359,11 +250,47 @@
   </table>
 </section>
 
+<!-- ================= PRINCIPLES ================= -->
+<section>
+  <div class="sec-head">
+    <h2>File and data principles</h2>
+    <span class="eyebrow">PRN / standing rules</span>
+  </div>
+  <table>
+    <tbody>
+      <tr>
+        <td><b>Every byte has exactly one home</b><span class="sub">Copies are backups, never versions. The routing table above decides the home.</span></td>
+        <td><span class="dot go"></span>In force</td>
+      </tr>
+      <tr>
+        <td><b>Code lives on GitHub</b><span class="sub">A repo that exists on only one machine does not exist.</span></td>
+        <td><span class="dot go"></span>In force</td>
+      </tr>
+      <tr>
+        <td><b>The Mac is a client</b><span class="sub">Nothing vital stored locally. It views and edits what lives on the fleet.</span></td>
+        <td><span class="dot go"></span>In force</td>
+      </tr>
+      <tr>
+        <td><b>Backups are automatic and verified</b><span class="sub">Hourly mirror to the Storage Box with dated trash, never manual copies.</span></td>
+        <td><span class="dot hold"></span>Live after step 08</td>
+      </tr>
+      <tr>
+        <td><b>Free and open tooling first</b><span class="sub">Pay for capacity, not licenses: rclone over Mountain Duck, Modal credits over a bigger box.</span></td>
+        <td><span class="dot go"></span>In force</td>
+      </tr>
+      <tr>
+        <td><b>Mac file system scheme</b><span class="sub">How ~/Documents and friends are organized, named, and sorted. Written during the Mac overhaul.</span></td>
+        <td><span class="dot hold"></span>Next, after migration</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
 <!-- ================= MIGRATION ================= -->
 <section>
   <div class="sec-head">
-    <h2>Migration sequence</h2>
-    <span class="eyebrow">SEQ / CPX31 to CX33</span>
+    <h2>Active operation: CPX31 to CX33</h2>
+    <span class="eyebrow">OPS / retires when complete</span>
   </div>
 
   <div class="seq" id="checklist">
@@ -382,7 +309,7 @@
     <div class="step"><span class="num">13</span><input type="checkbox" id="k-vscode" data-k="vscode"><label for="k-vscode">VS Code audit: prune extensions for the 8 GB server</label></div>
   </div>
 
-  <div class="gate">
+  <div class="card gate">
     <h3>CPX31 delete gate: all five, no exceptions</h3>
     <ul>
       <li>Audit inventory triaged, nothing unaccounted for</li>

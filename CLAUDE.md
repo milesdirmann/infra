@@ -54,6 +54,18 @@ all scripts are written but unrun. Order:
 - Heavy compute goes to Modal, not a bigger VPS. Hetzner rescale is the
   escape hatch (CPU/RAM-only resize is reversible; disk grow is not).
 
+## Personal OS
+
+The dashboard is not a project tracker: it is the standing source of truth,
+always reflecting the latest state, and the first page of Miles' "Personal OS",
+a family of pages sharing one brand (health and others will follow). The brand
+lives in `brand/os.css` (tokens + components), `brand/README.md` (rules),
+`brand/skeleton.html` (starter for new pages). Temporal work (like the CPX31
+migration) appears as an "Active operation" section and is removed when done.
+The "File and data principles" section carries the standing rules for all
+development, personal and professional; the Mac file system scheme gets added
+there after the post migration Mac overhaul.
+
 ## Conventions
 
 - Repo: `milesdirmann/infra`, branch `main` (renamed 2026-07-16 from
