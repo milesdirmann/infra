@@ -41,8 +41,11 @@ risked a torn database. It was captured with SQLite's online backup API
 matched the live database. Now in three places, identical sha256
 (`1f0f1569...c50a11`):
 
-- `sbox:archive/cpx31/db-dumps/liquidco-engine.db`
+- `sbox:archive/cpx31/db-dumps/liquidco-engine-final.db` (and `liquidco-engine.db`,
+  a byte identical earlier capture: the engine wrote nothing in between, which
+  confirms it was inert rather than collecting)
 - `CX33:/root/projects/cpx31-imports/liquidco-engine.db`
+- inside `home-liquidco.tar.zst`
 - (source, destroyed with the server)
 
 **If you ever resume the gold engine: deploy the code from the Mac's
@@ -51,7 +54,7 @@ server's stale `dist/`.
 
 ## Where everything went
 
-Archive total: **50.4 GiB**. Every stream was sha256'd on the CPX31 as it was
+Archive total: **43.8 GiB** in 20 objects. Every stream was sha256'd on the CPX31 as it was
 written and independently re-hashed on the Storage Box afterwards. All nine
 matched. Full list in `archive/cpx31/MANIFEST.txt`.
 
