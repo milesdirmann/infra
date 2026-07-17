@@ -37,8 +37,8 @@ enabled (the default):
 
 | Bookmark | Protocol | Server | Port | User | Path |
 |---|---|---|---|---|---|
-| CPX31 | SFTP | your VPS IP | 22 | your VPS user | /home/YOU/projects |
-| Hetzner-Storage | SFTP | uXXXXXX.your-storagebox.de | **23** | uXXXXXX | / |
+| CX33 | SFTP | 89.167.110.196 | 22 | root | /root/projects |
+| Cold-Storage | SFTP | u634219.your-storagebox.de | **23** | u634219 | / |
 
 Use your SSH key for auth on both. Both appear under Finder's Locations with
 cloud icons: files are online-only by default (zero Mac disk), click/open to

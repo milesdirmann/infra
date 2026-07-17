@@ -11,15 +11,15 @@
 # Then: bash tools/mac/mount-hetzner.sh mount | unmount | status
 set -euo pipefail
 
-# ---- edit these three lines ----
-VPS_HOST="${VPS_HOST:-your_hetzner_ip}"        # CPX server IP or ssh alias
-VPS_USER="${VPS_USER:-dev}"
-SBOX_HOST="${SBOX_HOST:-uXXXXXX.your-storagebox.de}"  # from Hetzner console
-SBOX_USER="${SBOX_USER:-uXXXXXX}"
-# --------------------------------
+# ---- current fleet (override via env if these change) ----
+VPS_HOST="${VPS_HOST:-89.167.110.196}"          # cx33-server, Helsinki
+VPS_USER="${VPS_USER:-root}"
+SBOX_HOST="${SBOX_HOST:-u634219.your-storagebox.de}"  # cold-storage BX11
+SBOX_USER="${SBOX_USER:-u634219}"
+# -----------------------------------------------------------
 
-VOL_VPS="${VOL_VPS:-CPX-Projects}"     # Finder sidebar name for live VPS projects
-VOL_SBOX="${VOL_SBOX:-Hetzner-Storage}" # Finder sidebar name for the 1TB Storage Box
+VOL_VPS="${VOL_VPS:-CX33-Projects}"     # Finder sidebar name for live VPS projects
+VOL_SBOX="${VOL_SBOX:-Cold-Storage}"    # Finder sidebar name for the 1TB Storage Box
 MNT_BASE="$HOME/HetznerDrives"
 
 configure() {
