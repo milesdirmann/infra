@@ -70,7 +70,8 @@ case "${1:-mount}" in
     mount_one "cpx:$VPS_PATH" "$MNT_BASE/$VOL_VPS"  "$VOL_VPS"
     # NB: "sbox:" (login home), not "sbox:/" — the Storage Box chroot denies listing "/"
     mount_one "sbox:"                         "$MNT_BASE/$VOL_SBOX" "$VOL_SBOX"
-    open "$MNT_BASE"   # drag the two volumes into the Finder sidebar once; macOS remembers
+    # No `open` here: the launchd agent re-runs this every 5 min and a Finder
+    # window popping on each run steals focus. Open ~/Hetzner yourself.
     ;;
   unmount)
     umount "$MNT_BASE/$VOL_VPS"  2>/dev/null || true
