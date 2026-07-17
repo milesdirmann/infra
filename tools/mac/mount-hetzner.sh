@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Mount Hetzner locations as Finder volumes via rclone + FUSE-T (kext-free).
+# Mount Hetzner locations as Finder volumes via rclone nfsmount (no FUSE needed).
+# NOTE: this is the FREE fallback. For Dropbox-style Finder integration
+# (cloud badges, online-only files, right-click offline pinning) use
+# Mountain Duck instead — see docs/finder-remote-volumes.md.
 #
 # One-time Mac setup:
-#   brew install rclone
-#   brew install --cask fuse-t          # kext-free FUSE, no security-settings dance
+#   brew install rclone   # Homebrew's rclone has no `mount` on macOS; we use `nfsmount`
 #   bash tools/mac/mount-hetzner.sh configure   # writes the rclone remotes
 #
 # Then: bash tools/mac/mount-hetzner.sh mount | unmount | status
@@ -37,7 +39,7 @@ mount_one() { # remote:path  mountpoint  volname
     echo "$3 mount is stale; remounting"
     umount -f "$2" 2>/dev/null || diskutil unmount force "$2" 2>/dev/null || true
   fi
-  rclone mount "$1" "$2" \
+  rclone nfsmount "$1" "$2" \
     --volname "$3" \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 2G \

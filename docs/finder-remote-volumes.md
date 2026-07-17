@@ -19,11 +19,38 @@ username (`uXXXXXX`). Upload your key:
 ssh-copy-id -p 23 uXXXXXX@uXXXXXX.your-storagebox.de
 ```
 
-## Step 1 — Mac one-time setup
+## Step 1 — Mac setup
+
+### Option A (recommended): Mountain Duck — full Dropbox/Drive-style UX
+
+The cloud badges, per-file download buttons, and right-click
+"Make available offline" / "online only" menus are Apple File Provider
+features; only File Provider apps can show them. Mountain Duck
+(mountainduck.io, ~$40 one-time, free trial) does this over plain SFTP:
+
+```bash
+brew install --cask mountain-duck
+```
+
+Add two bookmarks (File > New Bookmark), each with **Smart Synchronization**
+enabled (the default):
+
+| Bookmark | Protocol | Server | Port | User | Path |
+|---|---|---|---|---|---|
+| CPX31 | SFTP | your VPS IP | 22 | your VPS user | /home/YOU/projects |
+| Hetzner-Storage | SFTP | uXXXXXX.your-storagebox.de | **23** | uXXXXXX | / |
+
+Use your SSH key for auth on both. Both appear under Finder's Locations with
+cloud icons: files are online-only by default (zero Mac disk), click/open to
+download, right-click for Keep Offline / Remove Local Copy.
+
+### Option B (free fallback): rclone nfsmount
+
+Plain Finder volumes — files stream on demand and never consume Mac disk, but
+no badges or offline-pinning menu:
 
 ```bash
 brew install rclone
-brew install --cask fuse-t        # kext-free FUSE; no System Settings approval needed
 # edit the 4 host/user lines at the top of tools/mac/mount-hetzner.sh, then:
 bash tools/mac/mount-hetzner.sh configure
 bash tools/mac/mount-hetzner.sh mount
