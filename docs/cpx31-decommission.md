@@ -51,16 +51,29 @@ server's stale `dist/`.
 
 ## Where everything went
 
-| Data | Destination |
-|---|---|
-| ClickHouse 48 GB (`alien` + `scouq` dbs) | `archive/cpx31/clickhouse.tar.zst`, 31 GB compressed, sha256 verified end to end |
-| `/home/avo` 27 GB (minus venvs, node_modules, caches, whisper models) | `archive/cpx31/home/avo`, checksum verified |
-| `/home/scouq`, `/home/liquidco`, `/home/gold`, `/home/invest` | `archive/cpx31/home/...` |
-| `/root/argus-source`, `argus-leads`, `argus-bin`, `avo-project` | `archive/cpx31/root/...` |
-| nginx, letsencrypt, systemd units, all crontabs, docker volumes (postiz), redis dump, dpkg selections | `archive/cpx31/system-bundle.tar.zst` |
-| LiquidCo engine database | `archive/cpx31/db-dumps/` + CX33 (see above) |
-| `liquidco`, `gold`, `invest` code (possibly still wanted) | `CX33:/root/projects/cpx31-imports/` |
-| node_modules, .venv, caches, whisper models, OS | Nowhere. Regenerable by design. |
+Archive total: **50.4 GiB**. Every stream was sha256'd on the CPX31 as it was
+written and independently re-hashed on the Storage Box afterwards. All nine
+matched. Full list in `archive/cpx31/MANIFEST.txt`.
+
+| Data | Archive | Size | sha256 |
+|---|---|---|---|
+| ClickHouse 48 GB (`alien` + `scouq`), server stopped so the copy is consistent | `clickhouse.tar.zst` | 33.7 GB | `2a73b741` |
+| `/home/avo`, 139,302 files | `home-avo.tar.zst` | 8.06 GB | `acc125eb` |
+| `/home/scouq`, 129,467 files | `home-scouq.tar.zst` | 3.79 GB | `df05aa25` |
+| `/root`: argus-source, argus-leads, argus-bin, avo-project | `root-work.tar.zst` | 138 MB | `d868ac8a` |
+| `/home/liquidco` incl. engine.db | `home-liquidco.tar.zst` | 24 MB | `8c42f4bf` |
+| nginx, letsencrypt certs, systemd units, all crontabs, docker volumes (postiz postgres), redis dump, dpkg selections, `avo/.env` | `system-bundle.tar.zst` | 18 MB (132 MB raw) | `c4e80373` |
+| `/home/gold` | `home-gold.tar.zst` | 1.6 MB | `6873c6c3` |
+| `/home/invest` | `home-invest.tar.zst` | 20 KB | `01ba4a05` |
+| LiquidCo bid history, SQLite `.backup` | `db-dumps/liquidco-engine-final.db` | 128 MB | `1f0f1569` |
+| Loose 1 GB dataset from `/tmp` | `stray/redfin_city.gz` | 1 GB | n/a |
+| `liquidco`, `gold`, `invest` code + the engine db | also on `CX33:/root/projects/cpx31-imports/` | 350 MB | |
+| node_modules, .venv, caches, whisper models, OS | Nowhere. Regenerable by design. | | |
+
+Verification was not left at "the hashes match". The LiquidCo database was
+pulled back **out** of `home-liquidco.tar.zst` on the Storage Box, extracted,
+and opened: `PRAGMA integrity_check` returned `ok` and all 255,790 rows were
+there. The archive is not just intact, it is usable.
 
 Whisper models were excluded deliberately: `ggml-large-v3.bin` (2.9 GB) and
 `ggml-small.en.bin` (466 MB) are free re-downloads from Hugging Face.

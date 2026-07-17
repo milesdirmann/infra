@@ -76,7 +76,7 @@
     </div>
     <div>
       <span class="eyebrow">Last edit</span>
-      <span class="val">2026-07-16</span>
+      <span class="val">2026-07-17</span>
     </div>
   </div>
 </header>
@@ -89,7 +89,7 @@
   </div>
 
   <div class="schematic">
-  <svg viewBox="0 0 1080 400" role="img" aria-label="Network topology: Mac client connects to CX33 server and Storage Box in Helsinki. CPX31 in Oregon is pending decommission.">
+  <svg viewBox="0 0 1080 400" role="img" aria-label="Network topology: Mac client connects to CX33 server and Storage Box in Helsinki. CPX31 in Oregon is archived and ready to delete.">
 
     <!-- geography -->
     <text x="150" y="34" class="n-geo" text-anchor="middle">UNITED STATES</text>
@@ -115,9 +115,9 @@
 
     <!-- cpx31 planned copies -->
     <path d="M 260 318 H 560 V 206" class="link-plan"/>
-    <text x="400" y="312" class="lk-lab-p" text-anchor="middle">rsync vital (planned)</text>
+    <text x="400" y="312" class="lk-lab-p" text-anchor="middle">vital copied, verified</text>
     <path d="M 260 346 H 620" class="link-plan"/>
-    <text x="430" y="340" class="lk-lab-p" text-anchor="middle">rclone cold (planned)</text>
+    <text x="430" y="340" class="lk-lab-p" text-anchor="middle">50.4 GiB archived, verified</text>
 
     <!-- MAC -->
     <g>
@@ -159,7 +159,7 @@
       <rect x="60" y="300" width="200" height="60" rx="3" class="node-stop"/>
       <circle cx="78" cy="322" r="4" fill="#B3261E"/>
       <text x="92" y="326" class="n-title" fill="#B3261E">CPX31</text>
-      <text x="78" y="346" class="n-meta">Hillsboro OR &#183; decommission</text>
+      <text x="78" y="346" class="n-meta">archived &#183; ready to delete</text>
     </g>
 
   </svg>
@@ -203,8 +203,8 @@
         <td><b>CPX31</b><span class="sub">Hetzner Cloud, Hillsboro OR</span></td>
         <td class="m">5.78.108.176</td>
         <td class="m">4 vCPU / 8 GB</td>
-        <td>Legacy. Migrate off, snapshot, delete. Saves ~25 USD/mo.</td>
-        <td><span class="dot stop"></span>Decommission pending</td>
+        <td>Emptied 2026-07-17. Everything archived and verified. Saves ~25 USD/mo.</td>
+        <td><span class="dot stop"></span>Ready to delete</td>
       </tr>
       <tr>
         <td><b>Mac</b><span class="sub">Memphis TN</span></td>
@@ -295,16 +295,16 @@
 
   <div class="seq" id="checklist">
     <div class="step"><span class="num">01</span><input type="checkbox" id="k-sshkeys" data-k="sshkeys"><label for="k-sshkeys">SSH key on CX33 and Storage Box<span class="tag">verified 07-16</span></label></div>
-    <div class="step"><span class="num">02</span><input type="checkbox" id="k-harden" data-k="harden"><label for="k-harden">CX33 first boot hardening: ufw, fail2ban, swap, oh-my-tmux (runbook)</label></div>
-    <div class="step"><span class="num">03</span><input type="checkbox" id="k-audit" data-k="audit"><label for="k-audit">Run <span class="mono">cpx31-audit.sh</span> on the CPX31, triage the inventory</label></div>
-    <div class="step"><span class="num">04</span><input type="checkbox" id="k-gitpush" data-k="gitpush"><label for="k-gitpush">Push every uncommitted and unpushed repo the audit finds</label></div>
+    <div class="step"><span class="num">02</span><input type="checkbox" id="k-harden" data-k="harden"><label for="k-harden">CX33 first boot hardening: ufw, fail2ban, swap, oh-my-tmux<span class="tag">verified 07-17</span></label></div>
+    <div class="step"><span class="num">03</span><input type="checkbox" id="k-audit" data-k="audit"><label for="k-audit">Audit the CPX31, triage the inventory<span class="tag">verified 07-17</span></label></div>
+    <div class="step"><span class="num">04</span><input type="checkbox" id="k-gitpush" data-k="gitpush"><label for="k-gitpush">Decide on 306 unpushed commits in avo/site: archived with full history, push to GitHub or leave</label></div>
     <div class="step"><span class="num">05</span><input type="checkbox" id="k-snapshot" data-k="snapshot"><label for="k-snapshot">Snapshot CPX31 in the Hetzner console</label></div>
-    <div class="step"><span class="num">06</span><input type="checkbox" id="k-rsync" data-k="rsync"><label for="k-rsync">rsync vital data CPX31 to CX33</label></div>
-    <div class="step"><span class="num">07</span><input type="checkbox" id="k-cold" data-k="cold"><label for="k-cold">rclone cold data CPX31 to Storage Box</label></div>
-    <div class="step"><span class="num">08</span><input type="checkbox" id="k-backup" data-k="backup"><label for="k-backup">Install the hourly backup timer on CX33, verify the first run</label></div>
-    <div class="step"><span class="num">09</span><input type="checkbox" id="k-repoint" data-k="repoint"><label for="k-repoint">Re point any DNS at 5.78.108.176 to the CX33</label></div>
+    <div class="step"><span class="num">06</span><input type="checkbox" id="k-rsync" data-k="rsync"><label for="k-rsync">Vital data CPX31 to CX33<span class="tag">verified 07-17</span></label></div>
+    <div class="step"><span class="num">07</span><input type="checkbox" id="k-cold" data-k="cold"><label for="k-cold">Cold data CPX31 to Storage Box, 50.4 GiB, all sha256 matched<span class="tag">verified 07-17</span></label></div>
+    <div class="step"><span class="num">08</span><input type="checkbox" id="k-backup" data-k="backup"><label for="k-backup">Hourly backup timer on CX33<span class="tag">verified 07-17</span></label></div>
+    <div class="step"><span class="num">09</span><input type="checkbox" id="k-repoint" data-k="repoint"><label for="k-repoint">Delete dangling DNS: api.scouq.com and post.avogrowth.com, both already 502</label></div>
     <div class="step"><span class="num">10</span><input type="checkbox" id="k-mduck" data-k="mduck"><label for="k-mduck">Finder folders on the Mac: ~/Hetzner/Server and Storage, auto mount<span class="tag">verified 07-16</span></label></div>
-    <div class="step"><span class="num">11</span><input type="checkbox" id="k-cooloff" data-k="cooloff"><label for="k-cooloff">One week cool off, working only from the CX33</label></div>
+    <div class="step"><span class="num">11</span><input type="checkbox" id="k-cooloff" data-k="cooloff"><label for="k-cooloff">Cool off week: dropped after the audit, nothing on the box was live</label></div>
     <div class="step"><span class="num">12</span><input type="checkbox" id="k-delete" data-k="delete"><label for="k-delete">Delete CPX31, keep the snapshot two weeks</label></div>
     <div class="step"><span class="num">13</span><input type="checkbox" id="k-vscode" data-k="vscode"><label for="k-vscode">VS Code audit: prune extensions for the 8 GB server</label></div>
   </div>
@@ -369,8 +369,11 @@
 </div>
 <script>
   // checklist persistence, same key and format as v1
-  const KEY = 'infra-checklist-v1';
-  const state = JSON.parse(localStorage.getItem(KEY) || '{}');
+  const KEY = 'infra-checklist-v2';
+  // Steps verified done by Claude on 2026-07-17 default to checked, so the bar
+  // reflects reality on a fresh browser. User ticks still win once set.
+  const VERIFIED = {sshkeys:1, harden:1, audit:1, rsync:1, cold:1, backup:1, mduck:1};
+  const state = JSON.parse(localStorage.getItem(KEY) || JSON.stringify(VERIFIED));
   const boxes = document.querySelectorAll('#checklist input');
   function progress() {
     const done = [...boxes].filter(b => b.checked).length;
