@@ -3,180 +3,465 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Miles · Infra Source of Truth</title>
+<title>INFRA / Source of Truth</title>
 <style>
+  @font-face {
+    font-family: 'Geist';
+    src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
+    font-weight: 100 900; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Geist Mono';
+    src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+    font-weight: 100 900; font-display: swap;
+  }
+
   :root {
-    --bg: #0e1116; --panel: #161b22; --panel2: #1c2330; --line: #2a3342;
-    --text: #e6edf3; --dim: #8b98a9; --accent: #4da3ff; --ok: #3fb950;
-    --warn: #d29922; --bad: #f85149; --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --paper: #FAFAF8;
+    --panel: #FFFFFF;
+    --ink: #101014;
+    --muted: #71717A;
+    --faint: #A1A1AA;
+    --line: #E5E5E1;
+    --line-dark: #18181B;
+    --go: #17803D;
+    --hold: #A16207;
+    --stop: #B3261E;
+    --sans: 'Geist', -apple-system, 'Helvetica Neue', sans-serif;
+    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   }
-  @media (prefers-color-scheme: light) {
-    :root { --bg:#f6f8fa; --panel:#ffffff; --panel2:#eef2f6; --line:#d8dee6;
-            --text:#1f2328; --dim:#59616b; --accent:#0969da; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.55;
   }
-  * { box-sizing: border-box; margin: 0; }
-  body { background: var(--bg); color: var(--text);
-         font: 15px/1.55 -apple-system, "SF Pro Text", Segoe UI, sans-serif;
-         max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
-  h1 { font-size: 26px; letter-spacing: -0.02em; }
-  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em;
-       color: var(--dim); margin: 40px 0 14px; }
-  .sub { color: var(--dim); margin-top: 4px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
-  .card h3 { font-size: 16px; display: flex; align-items: center; gap: 8px; }
-  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
-  .ok { background: var(--ok); } .warn { background: var(--warn); } .off { background: var(--bad); }
-  .kv { margin-top: 10px; font-size: 13.5px; }
-  .kv div { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0;
-            border-bottom: 1px dashed var(--line); }
-  .kv div:last-child { border-bottom: none; }
-  .kv span:first-child { color: var(--dim); flex: none; }
-  .kv span:last-child { text-align: right; overflow-wrap: anywhere; }
-  code, .mono { font-family: var(--mono); font-size: 12.5px; }
-  pre { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px;
-        padding: 12px 14px; overflow-x: auto; margin: 8px 0;
-        font-family: var(--mono); font-size: 12.5px; line-height: 1.6; }
-  table { width: 100%; border-collapse: collapse; background: var(--panel);
-          border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: 13.5px; }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
-  th { color: var(--dim); font-weight: 600; background: var(--panel2); }
-  tr:last-child td { border-bottom: none; }
-  .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .node { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-          padding: 8px 14px; font-size: 13.5px; }
-  .node b { display: block; }
-  .node small { color: var(--dim); }
-  .arrow { color: var(--dim); }
-  .check { display: flex; gap: 10px; align-items: baseline; padding: 7px 10px;
-           border-radius: 7px; cursor: pointer; }
-  .check:hover { background: var(--panel2); }
-  .check input { transform: translateY(1px); accent-color: var(--accent); }
-  .check.done span { color: var(--dim); text-decoration: line-through; }
-  .pill { font-size: 11px; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--line);
-          color: var(--dim); }
-  a { color: var(--accent); text-decoration: none; }
-  .note { font-size: 13px; color: var(--dim); margin-top: 6px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px 96px; }
+
+  a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--faint); }
+  a:hover { text-decoration-color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+  .mono { font-family: var(--mono); font-size: 0.92em; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 56px 0 0; }
+  .mast-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  h1 {
+    font-size: clamp(38px, 6vw, 58px); font-weight: 560;
+    letter-spacing: -0.035em; line-height: 1.02; margin-top: 10px;
+  }
+  .mast-sub { color: var(--muted); max-width: 560px; margin-top: 14px; font-size: 15px; }
+
+  .strip {
+    margin-top: 36px; border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 0;
+  }
+  .strip > div { padding: 14px 20px 16px; border-left: 1px solid var(--line); }
+  .strip > div:first-child { border-left: 0; padding-left: 0; }
+  .strip .val { font-family: var(--mono); font-size: 15px; margin-top: 4px; display: block; }
+  .bar { height: 3px; background: var(--line); margin-top: 10px; position: relative; }
+  .bar i { position: absolute; inset: 0 auto 0 0; background: var(--ink); width: 0%; transition: width .4s ease; }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 72px; }
+  .sec-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-top: 1px solid var(--line-dark); padding-top: 12px; margin-bottom: 26px;
+  }
+  .sec-head h2 { font-size: 19px; font-weight: 560; letter-spacing: -0.015em; }
+
+  /* ---------- topology ---------- */
+  .schematic { border: 1px solid var(--line); background: var(--panel); padding: 8px; overflow-x: auto; }
+  .schematic svg { display: block; width: 100%; height: auto; min-width: 720px; }
+  .sch-note { font-size: 13px; color: var(--muted); margin-top: 12px; }
+
+  svg text { font-family: var(--mono); }
+  .n-title { font-size: 12.5px; font-weight: 600; fill: var(--ink); letter-spacing: 0.02em; }
+  .n-meta  { font-size: 10.5px; fill: var(--muted); }
+  .n-geo   { font-size: 10px; fill: var(--faint); letter-spacing: 0.12em; }
+  .lk-lab  { font-size: 10px; fill: var(--muted); }
+  .lk-lab-p{ font-size: 10px; fill: var(--faint); font-style: italic; }
+  .node    { fill: var(--panel); stroke: var(--line-dark); stroke-width: 1.2; }
+  .node-ghost { fill: none; stroke: var(--faint); stroke-width: 1; stroke-dasharray: 4 4; }
+  .node-stop  { fill: #FDF6F5; stroke: var(--stop); stroke-width: 1; stroke-dasharray: 5 4; }
+  .link    { stroke: var(--line-dark); stroke-width: 1.1; fill: none; }
+  .link-live { stroke-dasharray: 6 5; animation: flow 1.6s linear infinite; }
+  .link-plan { stroke: var(--faint); stroke-width: 1; stroke-dasharray: 3 5; fill: none; }
+  @keyframes flow { to { stroke-dashoffset: -22; } }
+  @media (prefers-reduced-motion: reduce) { .link-live { animation: none; } }
+
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+  .dot.go { background: var(--go); } .dot.hold { background: var(--hold); } .dot.stop { background: var(--stop); }
+
+  /* ---------- tables ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    padding: 0 16px 10px 0; border-bottom: 1px solid var(--line-dark);
+  }
+  td { padding: 13px 16px 13px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.m { font-family: var(--mono); font-size: 13px; }
+  td .sub { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+
+  /* ---------- migration ---------- */
+  .seq { counter-reset: step; }
+  .step { display: flex; gap: 18px; padding: 15px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+  .step:last-child { border-bottom: 0; }
+  .step .num {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    min-width: 26px; padding-top: 3px;
+  }
+  .step input { margin-top: 4px; accent-color: var(--ink); width: 15px; height: 15px; flex-shrink: 0; }
+  .step label { cursor: pointer; flex: 1; }
+  .step .tag {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--go);
+    border: 1px solid currentColor; padding: 1px 7px; border-radius: 99px; margin-left: 10px;
+    white-space: nowrap;
+  }
+  .step.done label { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--faint); }
+  .step.done .tag { text-decoration: none; }
+
+  .gate {
+    margin-top: 30px; border: 1px solid var(--line-dark); background: var(--panel); padding: 22px 26px;
+  }
+  .gate h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+  .gate ul { list-style: none; }
+  .gate li { padding: 5px 0; font-size: 14px; color: var(--muted); }
+  .gate li::before { content: '::'; font-family: var(--mono); color: var(--faint); margin-right: 10px; }
+
+  footer {
+    margin-top: 88px; border-top: 1px solid var(--line-dark); padding-top: 16px;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+  }
+
+  @media (max-width: 860px) {
+    .wrap { padding: 0 20px 64px; }
+    .strip { grid-template-columns: 1fr 1fr; }
+    .strip > div { border-left: 0; padding-left: 0; }
+    .cols { grid-template-columns: 1fr; gap: 48px; }
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<h1>Infrastructure — Source of Truth</h1>
-<p class="sub">Lives in <span class="mono">milesdirmann/infra · dashboard/index.html</span>.
-Update it in the repo; <span class="mono">git pull</span> refreshes this page. Last edit: <b>2026-07-16</b></p>
+<header>
+  <div class="mast-top">
+    <span class="eyebrow">INFRA 001 / Source of Truth</span>
+    <span class="eyebrow">milesdirmann/infra</span>
+  </div>
+  <h1>Infrastructure</h1>
+  <p class="mast-sub">One operator, one server, one storage tier. Compute bursts to Modal,
+  nothing vital lives on the Mac. This page is generated from the repo: update it there,
+  <span class="mono">git pull</span> refreshes it here.</p>
 
-<h2>Fleet</h2>
-<div class="grid">
-  <div class="card">
-    <h3><span class="dot ok"></span>CX33 — primary dev server</h3>
-    <div class="kv">
-      <div><span>IP</span><span class="mono">89.167.110.196</span></div>
-      <div><span>Specs</span><span>4 vCPU · 8 GB · 80 GB NVMe</span></div>
-      <div><span>Location</span><span>Helsinki (eu-central)</span></div>
-      <div><span>Role</span><span>Active code, tmux, VS Code Remote-SSH</span></div>
-      <div><span>Cost</span><span>~€5.5/mo</span></div>
+  <div class="strip">
+    <div>
+      <span class="eyebrow">Migration to Helsinki</span>
+      <span class="val"><span id="pct">0%</span> complete</span>
+      <div class="bar"><i id="pbar"></i></div>
+    </div>
+    <div>
+      <span class="eyebrow">Fixed spend</span>
+      <span class="val">25 &rarr; 10 USD/mo</span>
+    </div>
+    <div>
+      <span class="eyebrow">Primary region</span>
+      <span class="val">HEL / Helsinki</span>
+    </div>
+    <div>
+      <span class="eyebrow">Last edit</span>
+      <span class="val">2026-07-16</span>
     </div>
   </div>
-  <div class="card">
-    <h3><span class="dot ok"></span>cold-storage — Storage Box BX11</h3>
-    <div class="kv">
-      <div><span>Host</span><span class="mono">u634219.your-storagebox.de</span></div>
-      <div><span>User / Port</span><span class="mono">u634219 · SFTP :23</span></div>
-      <div><span>Size</span><span>1 TB (Helsinki)</span></div>
-      <div><span>Role</span><span>Archives, hourly backup mirror</span></div>
-      <div><span>Cost</span><span>$4/mo</span></div>
+</header>
+
+<!-- ================= TOPOLOGY ================= -->
+<section>
+  <div class="sec-head">
+    <h2>Topology</h2>
+    <span class="eyebrow">TOP / live schematic</span>
+  </div>
+
+  <div class="schematic">
+  <svg viewBox="0 0 1080 400" role="img" aria-label="Network topology: Mac client connects to CX33 server and Storage Box in Helsinki. CPX31 in Oregon is pending decommission.">
+
+    <!-- geography -->
+    <text x="150" y="34" class="n-geo" text-anchor="middle">UNITED STATES</text>
+    <text x="985" y="34" class="n-geo" text-anchor="middle">HELSINKI FI</text>
+    <line x1="440" y1="20" x2="440" y2="384" stroke="#E5E5E1" stroke-width="1" stroke-dasharray="2 6"/>
+
+    <!-- links (drawn under nodes) -->
+    <!-- mac to cx33, live -->
+    <path d="M 240 150 H 620" class="link link-live"/>
+    <text x="430" y="140" class="lk-lab" text-anchor="middle">SSH / VS Code / NFS stream &#183; ~150 ms RTT</text>
+
+    <!-- mac to storage, live -->
+    <path d="M 240 180 H 340 V 300 H 620" class="link link-live"/>
+    <text x="480" y="292" class="lk-lab" text-anchor="middle">SFTP stream :23 &#183; Finder folder</text>
+
+    <!-- cx33 to storage, pending -->
+    <path d="M 750 206 V 280" class="link-plan"/>
+    <text x="762" y="247" class="lk-lab-p">rclone mirror, hourly (pending)</text>
+
+    <!-- cx33 to modal, on demand -->
+    <path d="M 750 110 V 64" class="link-plan"/>
+    <text x="762" y="92" class="lk-lab-p">modal run &#183; burst</text>
+
+    <!-- cpx31 planned copies -->
+    <path d="M 260 318 H 560 V 206" class="link-plan"/>
+    <text x="400" y="312" class="lk-lab-p" text-anchor="middle">rsync vital (planned)</text>
+    <path d="M 260 346 H 620" class="link-plan"/>
+    <text x="430" y="340" class="lk-lab-p" text-anchor="middle">rclone cold (planned)</text>
+
+    <!-- MAC -->
+    <g>
+      <rect x="60" y="120" width="180" height="90" rx="3" class="node"/>
+      <circle cx="78" cy="144" r="4" fill="#17803D"/>
+      <text x="92" y="148" class="n-title">MACBOOK</text>
+      <text x="78" y="170" class="n-meta">client only</text>
+      <text x="78" y="186" class="n-meta">~/Hetzner mounts &#183; live</text>
+    </g>
+
+    <!-- CX33 -->
+    <g>
+      <rect x="620" y="110" width="260" height="96" rx="3" class="node" stroke-width="1.6"/>
+      <circle cx="638" cy="134" r="4" fill="#A16207"/>
+      <text x="652" y="138" class="n-title">CX33 &#183; cx33-server</text>
+      <text x="638" y="160" class="n-meta">89.167.110.196</text>
+      <text x="638" y="176" class="n-meta">4 vCPU &#183; 8 GB &#183; 80 GB NVMe</text>
+      <text x="638" y="192" class="n-meta">hardening pending &#183; ~6 USD/mo</text>
+    </g>
+
+    <!-- STORAGE BOX -->
+    <g>
+      <rect x="620" y="280" width="260" height="88" rx="3" class="node"/>
+      <circle cx="638" cy="304" r="4" fill="#17803D"/>
+      <text x="652" y="308" class="n-title">STORAGE BOX &#183; BX11</text>
+      <text x="638" y="330" class="n-meta">u634219.your-storagebox.de :23</text>
+      <text x="638" y="346" class="n-meta">1 TB &#183; SFTP only &#183; 4 USD/mo</text>
+    </g>
+
+    <!-- MODAL -->
+    <g>
+      <rect x="660" y="16" width="180" height="48" rx="3" class="node-ghost"/>
+      <text x="678" y="36" class="n-title" fill="#71717A">MODAL</text>
+      <text x="678" y="52" class="n-meta">burst compute &#183; 30 USD credits</text>
+    </g>
+
+    <!-- CPX31 -->
+    <g>
+      <rect x="60" y="300" width="200" height="60" rx="3" class="node-stop"/>
+      <circle cx="78" cy="322" r="4" fill="#B3261E"/>
+      <text x="92" y="326" class="n-title" fill="#B3261E">CPX31</text>
+      <text x="78" y="346" class="n-meta">Hillsboro OR &#183; decommission</text>
+    </g>
+
+  </svg>
+  </div>
+  <p class="sch-note">Animated links are live and verified. Dotted links are planned or on demand.
+  If the CX33 died right now: active work is on GitHub, cold data is on the Storage Box,
+  and nothing irreplaceable was on the Mac.</p>
+</section>
+
+<!-- ================= FLEET ================= -->
+<section>
+  <div class="sec-head">
+    <h2>Fleet</h2>
+    <span class="eyebrow">FLT / inventory</span>
+  </div>
+  <table>
+    <thead><tr><th>Node</th><th>Address</th><th>Spec</th><th>Role</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>CX33</b><span class="sub">Hetzner Cloud, Helsinki</span></td>
+        <td class="m">89.167.110.196</td>
+        <td class="m">4 vCPU / 8 GB / 80 GB NVMe</td>
+        <td>Primary dev server: code, services, tmux, Remote SSH</td>
+        <td><span class="dot hold"></span>Provisioned, hardening pending</td>
+      </tr>
+      <tr>
+        <td><b>Storage Box BX11</b><span class="sub">Hetzner, Helsinki</span></td>
+        <td class="m">u634219.your-storagebox.de :23</td>
+        <td class="m">1 TB, SFTP only</td>
+        <td>Archives, assets, hourly backup target</td>
+        <td><span class="dot go"></span>Live, verified</td>
+      </tr>
+      <tr>
+        <td><b>Modal</b><span class="sub">serverless</span></td>
+        <td class="m">modal run / modal shell</td>
+        <td class="m">30 USD/mo free credits</td>
+        <td>Heavy builds, test suites, multi agent runs. Never storage.</td>
+        <td><span class="dot go"></span>Standby</td>
+      </tr>
+      <tr>
+        <td><b>CPX31</b><span class="sub">Hetzner Cloud, Hillsboro OR</span></td>
+        <td class="m">5.78.108.176</td>
+        <td class="m">4 vCPU / 8 GB</td>
+        <td>Legacy. Migrate off, snapshot, delete. Saves ~25 USD/mo.</td>
+        <td><span class="dot stop"></span>Decommission pending</td>
+      </tr>
+      <tr>
+        <td><b>Mac</b><span class="sub">Memphis TN</span></td>
+        <td class="m">local</td>
+        <td class="m">client</td>
+        <td>UI only. Finder mounts at ~/Hetzner, VS Code connects out.</td>
+        <td><span class="dot go"></span>Configured</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= DATA ROUTING ================= -->
+<section>
+  <div class="sec-head">
+    <h2>Data routing</h2>
+    <span class="eyebrow">RTE / the one rule</span>
+  </div>
+  <table>
+    <thead><tr><th>Data class</th><th>Destination</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Active code, running services, dotfiles</td>
+        <td class="m">CX33 /root/projects</td>
+        <td>Fast NVMe next to the runtime</td>
+      </tr>
+      <tr>
+        <td>Archives, old projects, large assets, DB dumps</td>
+        <td class="m">Storage Box</td>
+        <td>1 TB at 4 USD/mo, mirrored nowhere else needed</td>
+      </tr>
+      <tr>
+        <td>Caches, node_modules, build artifacts</td>
+        <td class="m">nowhere</td>
+        <td>Regenerable. Delete with the server.</td>
+      </tr>
+      <tr>
+        <td>Heavy one off compute</td>
+        <td class="m">Modal</td>
+        <td>Credits cover it. Not a storage location.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= MIGRATION ================= -->
+<section>
+  <div class="sec-head">
+    <h2>Migration sequence</h2>
+    <span class="eyebrow">SEQ / CPX31 to CX33</span>
+  </div>
+
+  <div class="seq" id="checklist">
+    <div class="step"><span class="num">01</span><input type="checkbox" id="k-sshkeys" data-k="sshkeys"><label for="k-sshkeys">SSH key on CX33 and Storage Box<span class="tag">verified 07-16</span></label></div>
+    <div class="step"><span class="num">02</span><input type="checkbox" id="k-harden" data-k="harden"><label for="k-harden">CX33 first boot hardening: ufw, fail2ban, swap, oh-my-tmux (runbook)</label></div>
+    <div class="step"><span class="num">03</span><input type="checkbox" id="k-audit" data-k="audit"><label for="k-audit">Run <span class="mono">cpx31-audit.sh</span> on the CPX31, triage the inventory</label></div>
+    <div class="step"><span class="num">04</span><input type="checkbox" id="k-gitpush" data-k="gitpush"><label for="k-gitpush">Push every uncommitted and unpushed repo the audit finds</label></div>
+    <div class="step"><span class="num">05</span><input type="checkbox" id="k-snapshot" data-k="snapshot"><label for="k-snapshot">Snapshot CPX31 in the Hetzner console</label></div>
+    <div class="step"><span class="num">06</span><input type="checkbox" id="k-rsync" data-k="rsync"><label for="k-rsync">rsync vital data CPX31 to CX33</label></div>
+    <div class="step"><span class="num">07</span><input type="checkbox" id="k-cold" data-k="cold"><label for="k-cold">rclone cold data CPX31 to Storage Box</label></div>
+    <div class="step"><span class="num">08</span><input type="checkbox" id="k-backup" data-k="backup"><label for="k-backup">Install the hourly backup timer on CX33, verify the first run</label></div>
+    <div class="step"><span class="num">09</span><input type="checkbox" id="k-repoint" data-k="repoint"><label for="k-repoint">Re point any DNS at 5.78.108.176 to the CX33</label></div>
+    <div class="step"><span class="num">10</span><input type="checkbox" id="k-mduck" data-k="mduck"><label for="k-mduck">Finder folders on the Mac: ~/Hetzner/Server and Storage, auto mount<span class="tag">verified 07-16</span></label></div>
+    <div class="step"><span class="num">11</span><input type="checkbox" id="k-cooloff" data-k="cooloff"><label for="k-cooloff">One week cool off, working only from the CX33</label></div>
+    <div class="step"><span class="num">12</span><input type="checkbox" id="k-delete" data-k="delete"><label for="k-delete">Delete CPX31, keep the snapshot two weeks</label></div>
+    <div class="step"><span class="num">13</span><input type="checkbox" id="k-vscode" data-k="vscode"><label for="k-vscode">VS Code audit: prune extensions for the 8 GB server</label></div>
+  </div>
+
+  <div class="gate">
+    <h3>CPX31 delete gate: all five, no exceptions</h3>
+    <ul>
+      <li>Audit inventory triaged, nothing unaccounted for</li>
+      <li>Every repo pushed to GitHub</li>
+      <li>Vital data on CX33 and cold data on Storage Box, checksum verified</li>
+      <li>Hourly backups green for seven days</li>
+      <li>Cool off week complete with zero trips back to the old box</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= ACCESS ================= -->
+<section>
+  <div class="cols">
+    <div>
+      <div class="sec-head">
+        <h2>Access</h2>
+        <span class="eyebrow">ACC / cheat sheet</span>
+      </div>
+      <table>
+        <tbody>
+          <tr><td>Shell on the server</td><td class="m">ssh server</td></tr>
+          <tr><td>Resume tmux</td><td class="m">ssh server -t tmux new -A -s main</td></tr>
+          <tr><td>Forward a dev port</td><td class="m">ssh -L 3000:localhost:3000 server</td></tr>
+          <tr><td>Storage Box shell</td><td class="m">ssh -p 23 u634219@u634219.your-storagebox.de</td></tr>
+          <tr><td>Finder folders</td><td class="m">~/Hetzner/Server &#183; ~/Hetzner/Storage</td></tr>
+          <tr><td>Remount by hand</td><td class="m">bash tools/mac/mount-hetzner.sh mount</td></tr>
+          <tr><td>Mount logs</td><td class="m">/tmp/rclone-Server.log &#183; -Storage.log</td></tr>
+          <tr><td>iPhone</td><td>Secure ShellFish app, SFTP to both<span class="sub">shows inside the iOS Files app, setup pending</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="sec-head">
+        <h2>Repo index</h2>
+        <span class="eyebrow">DOC / runbooks</span>
+      </div>
+      <table>
+        <tbody>
+          <tr><td class="m"><a href="../docs/migration-cpx31-to-cx33.md">docs/migration-cpx31-to-cx33.md</a></td><td>Migration and decommission runbook</td></tr>
+          <tr><td class="m"><a href="../docs/finder-remote-volumes.md">docs/finder-remote-volumes.md</a></td><td>Finder integration, chosen: rclone nfsmount</td></tr>
+          <tr><td class="m">tools/mac/mount-hetzner.sh</td><td>Finder mounts, installed and auto mounting</td></tr>
+          <tr><td class="m">tools/server/cpx31-audit.sh</td><td>Inventory the CPX31 before triage</td></tr>
+          <tr><td class="m">tools/server/rclone-backup.sh</td><td>Hourly server to Storage Box mirror</td></tr>
+          <tr><td class="m">tools/vscode-audit.sh</td><td>Dump VS Code config for the prune</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="card">
-    <h3><span class="dot warn"></span>CPX31 — decommissioning</h3>
-    <div class="kv">
-      <div><span>IP</span><span class="mono">5.78.108.176</span></div>
-      <div><span>Location</span><span>Hillsboro, OR (us-west)</span></div>
-      <div><span>Status</span><span>Migrate → snapshot → delete</span></div>
-      <div><span>Runbook</span><span><a href="../docs/migration-cpx31-to-cx33.md">migration-cpx31-to-cx33.md</a></span></div>
-      <div><span>Savings</span><span>~$25/mo once deleted</span></div>
-    </div>
-  </div>
-  <div class="card">
-    <h3><span class="dot ok"></span>Modal — burst compute</h3>
-    <div class="kv">
-      <div><span>Role</span><span>Heavy builds, test suites, multi-agent runs</span></div>
-      <div><span>Budget</span><span>$30/mo free credits</span></div>
-      <div><span>Pattern</span><span class="mono">modal run / modal shell</span></div>
-    </div>
-  </div>
+</section>
+
+<footer>
+  <span>INFRA 001 &#183; milesdirmann/infra &#183; dashboard/index.html</span>
+  <span>checklist state saved in this browser</span>
+</footer>
+
 </div>
-
-<h2>Data routing — what lives where</h2>
-<div class="flow">
-  <div class="node"><b>Mac</b><small>UI only · no vital data</small></div>
-  <span class="arrow">⇄ SSH/SFTP ⇄</span>
-  <div class="node"><b>CX33 NVMe</b><small>active code · services</small></div>
-  <span class="arrow">→ rclone hourly →</span>
-  <div class="node"><b>Storage Box</b><small>archives · backups</small></div>
-</div>
-<div class="flow" style="margin-top:8px">
-  <div class="node"><b>CX33</b><small>orchestrates</small></div>
-  <span class="arrow">→ modal run →</span>
-  <div class="node"><b>Modal</b><small>burst CPU · ephemeral</small></div>
-</div>
-<p class="note">Rule of thumb: if the CX33 died right now, active work is on GitHub,
-everything else is on the Storage Box, and nothing irreplaceable was on the Mac.</p>
-
-<h2>Connections cheat-sheet</h2>
-<table>
-  <tr><th>Target</th><th>Command / setting</th></tr>
-  <tr><td>SSH → CX33</td><td class="mono">ssh root@89.167.110.196</td></tr>
-  <tr><td>Resume tmux</td><td class="mono">ssh root@89.167.110.196 -t tmux new -A -s main</td></tr>
-  <tr><td>Port-forward a dev server</td><td class="mono">ssh -L 3000:localhost:3000 root@89.167.110.196</td></tr>
-  <tr><td>SSH → Storage Box</td><td class="mono">ssh -p 23 u634219@u634219.your-storagebox.de</td></tr>
-  <tr><td>Finder folders (rclone nfsmount)</td><td class="mono">~/Hetzner/Server (CX33) + ~/Hetzner/Storage (box) · nobrowse · auto-mount via launchd</td></tr>
-  <tr><td>Remount by hand</td><td class="mono">bash tools/mac/mount-hetzner.sh mount | unmount | status</td></tr>
-  <tr><td>rclone remotes</td><td class="mono">cpx: → CX33 · sbox: → Storage Box (see tools/mac/mount-hetzner.sh)</td></tr>
-  <tr><td>Backup log (on CX33)</td><td class="mono">tail /var/log/hetzner-backup.log</td></tr>
-</table>
-
-<h2>Migration checklist <span class="pill">saved in this browser</span></h2>
-<div class="card" id="checklist">
-  <label class="check"><input type="checkbox" data-k="sshkeys"><span>SSH key on CX33 + Storage Box (<span class="mono">ssh-copy-id</span>, box uses port 23)</span></label>
-  <label class="check"><input type="checkbox" data-k="harden"><span>CX33 first-boot hardening: ufw, fail2ban, swapfile, oh-my-tmux (see runbook)</span></label>
-  <label class="check"><input type="checkbox" data-k="audit"><span>Run <span class="mono">cpx31-audit.sh</span> on CPX31, triage the inventory</span></label>
-  <label class="check"><input type="checkbox" data-k="gitpush"><span>Push all uncommitted/unpushed git work found by the audit</span></label>
-  <label class="check"><input type="checkbox" data-k="snapshot"><span>Snapshot CPX31 in Hetzner console</span></label>
-  <label class="check"><input type="checkbox" data-k="rsync"><span>rsync vital data CPX31 → CX33</span></label>
-  <label class="check"><input type="checkbox" data-k="cold"><span>rclone cold data CPX31 → Storage Box</span></label>
-  <label class="check"><input type="checkbox" data-k="backup"><span>Install hourly backup timer on CX33, verify first run in log</span></label>
-  <label class="check"><input type="checkbox" data-k="repoint"><span>Re-point VS Code Remote-SSH, DNS → CX33</span></label>
-  <label class="check"><input type="checkbox" data-k="mduck"><span>Finder mounts (rclone nfsmount): both volumes verified + launchd auto-mount loaded ✓ done 2026-07-16</span></label>
-  <label class="check"><input type="checkbox" data-k="cooloff"><span>One-week cool-off working only from CX33</span></label>
-  <label class="check"><input type="checkbox" data-k="delete"><span>Delete CPX31 (~$25/mo saved) — keep snapshot 2 weeks</span></label>
-  <label class="check"><input type="checkbox" data-k="vscode"><span>VS Code audit: run <span class="mono">tools/vscode-audit.sh</span>, prune extensions for 8GB server</span></label>
-</div>
-
-<h2>Runbooks & scripts in this repo</h2>
-<table>
-  <tr><th>File</th><th>Purpose</th></tr>
-  <tr><td class="mono"><a href="../docs/migration-cpx31-to-cx33.md">docs/migration-cpx31-to-cx33.md</a></td><td>Full migration + decommission runbook</td></tr>
-  <tr><td class="mono"><a href="../docs/finder-remote-volumes.md">docs/finder-remote-volumes.md</a></td><td>Finder integration: rclone nfsmount (free, chosen) / Mountain Duck (paid, skipped)</td></tr>
-  <tr><td class="mono">tools/server/cpx31-audit.sh</td><td>Inventory CPX31 before triage</td></tr>
-  <tr><td class="mono">tools/server/rclone-backup.sh + .service/.timer</td><td>Hourly server → Storage Box mirror</td></tr>
-  <tr><td class="mono">tools/mac/mount-hetzner.sh</td><td>Finder mounts (rclone nfsmount) — the chosen integration, installed + auto-mounting</td></tr>
-  <tr><td class="mono">tools/vscode-audit.sh</td><td>Dump VS Code config for optimization review</td></tr>
-</table>
-
 <script>
-  // checklist persistence
+  // checklist persistence, same key and format as v1
   const KEY = 'infra-checklist-v1';
   const state = JSON.parse(localStorage.getItem(KEY) || '{}');
-  document.querySelectorAll('#checklist input').forEach(cb => {
+  const boxes = document.querySelectorAll('#checklist input');
+  function progress() {
+    const done = [...boxes].filter(b => b.checked).length;
+    const pct = Math.round(100 * done / boxes.length);
+    document.getElementById('pct').textContent = pct + '%';
+    document.getElementById('pbar').style.width = pct + '%';
+  }
+  boxes.forEach(cb => {
     cb.checked = !!state[cb.dataset.k];
-    cb.parentElement.classList.toggle('done', cb.checked);
+    cb.closest('.step').classList.toggle('done', cb.checked);
     cb.addEventListener('change', () => {
       state[cb.dataset.k] = cb.checked;
       localStorage.setItem(KEY, JSON.stringify(state));
-      cb.parentElement.classList.toggle('done', cb.checked);
+      cb.closest('.step').classList.toggle('done', cb.checked);
+      progress();
     });
   });
+  progress();
 </script>
 </body>
 </html>

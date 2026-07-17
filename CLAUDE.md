@@ -31,6 +31,12 @@ all scripts are written but unrun. Order:
 6. Cool-off week → delete CPX31
 7. Pending separately: VS Code config review — run `tools/vscode-audit.sh` on
    the Mac and give the output to Claude to prune extensions for the 8GB box
+8. Pending: iPhone file access via Secure ShellFish (SFTP into iOS Files app).
+   When Miles installs it, add its public key to CX33 + Storage Box
+   authorized_keys. iOS "Connect to Server" is SMB only, do not enable SMB.
+9. Pending after migration: full Mac file system overhaul. Audit everything,
+   delete aggressively (with approval), reorganize, move cold data to the
+   Storage Box. Expect heavy use of ~/Hetzner/Storage.
 
 ## Key decisions already made (don't relitigate)
 
