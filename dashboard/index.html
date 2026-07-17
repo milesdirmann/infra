@@ -105,9 +105,9 @@
     <path d="M 240 180 H 340 V 300 H 620" class="link link-live"/>
     <text x="480" y="292" class="lk-lab" text-anchor="middle">SFTP stream :23 &#183; Finder folder</text>
 
-    <!-- cx33 to storage, pending -->
-    <path d="M 750 206 V 280" class="link-plan"/>
-    <text x="762" y="247" class="lk-lab-p">rclone mirror, hourly (pending)</text>
+    <!-- cx33 to storage, live -->
+    <path d="M 750 206 V 280" class="link link-live"/>
+    <text x="762" y="247" class="lk-lab">rclone mirror, hourly</text>
 
     <!-- cx33 to modal, on demand -->
     <path d="M 750 110 V 64" class="link-plan"/>
@@ -131,11 +131,11 @@
     <!-- CX33 -->
     <g>
       <rect x="620" y="110" width="260" height="96" rx="3" class="node" stroke-width="1.6"/>
-      <circle cx="638" cy="134" r="4" fill="#A16207"/>
+      <circle cx="638" cy="134" r="4" fill="#17803D"/>
       <text x="652" y="138" class="n-title">CX33 &#183; cx33-server</text>
       <text x="638" y="160" class="n-meta">89.167.110.196</text>
       <text x="638" y="176" class="n-meta">4 vCPU &#183; 8 GB &#183; 80 GB NVMe</text>
-      <text x="638" y="192" class="n-meta">hardening pending &#183; ~6 USD/mo</text>
+      <text x="638" y="192" class="n-meta">hardened &#183; ~6 USD/mo</text>
     </g>
 
     <!-- STORAGE BOX -->
@@ -183,7 +183,7 @@
         <td class="m">89.167.110.196</td>
         <td class="m">4 vCPU / 8 GB / 80 GB NVMe</td>
         <td>Primary dev server: code, services, tmux, Remote SSH</td>
-        <td><span class="dot hold"></span>Provisioned, hardening pending</td>
+        <td><span class="dot go"></span>Live, hardened 07-16</td>
       </tr>
       <tr>
         <td><b>Storage Box BX11</b><span class="sub">Hetzner, Helsinki</span></td>
@@ -272,7 +272,7 @@
       </tr>
       <tr>
         <td><b>Backups are automatic and verified</b><span class="sub">Hourly mirror to the Storage Box with dated trash, never manual copies.</span></td>
-        <td><span class="dot hold"></span>Live after step 08</td>
+        <td><span class="dot go"></span>In force</td>
       </tr>
       <tr>
         <td><b>Free and open tooling first</b><span class="sub">Pay for capacity, not licenses: rclone over Mountain Duck, Modal credits over a bigger box.</span></td>
