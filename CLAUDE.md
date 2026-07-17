@@ -50,7 +50,9 @@ all scripts are written but unrun. Order:
 
 ## Conventions
 
-- Branch for this work: `claude/infrastructure-cost-optimization-vqmgse`
+- Repo: `milesdirmann/infra`, branch `main` (renamed 2026-07-16 from
+  `milesdirmann/projects` / `claude/infrastructure-cost-optimization-vqmgse`).
+  Local clone: `~/infra` on the Mac.
 - Keep `dashboard/index.html` updated when fleet/config changes — it is the
   user's primary visual reference. Static values only; update "Last edit" date.
 - Scripts must be idempotent and safe to re-run; comments carry install steps.
