@@ -65,6 +65,24 @@ server's stale `dist/`.
 Whisper models were excluded deliberately: `ggml-large-v3.bin` (2.9 GB) and
 `ggml-small.en.bin` (466 MB) are free re-downloads from Hugging Face.
 
+### Reading the archive
+
+Each tree is one `.tar.zst` stream (not a browsable directory) because the
+box is 150 ms away and per-file SFTP on 278,000 files would have taken about
+eleven hours instead of one. To compensate, `archive/cpx31/filelists/` holds
+a `size / date / path` index of every file, so the archive is searchable
+without extracting anything:
+
+```bash
+grep -i somefile ~/Hetzner/Storage/archive/cpx31/filelists/home-avo.filelist.txt
+# extract a single path without unpacking the whole tar:
+rclone cat sbox:archive/cpx31/home-avo.tar.zst | zstd -d | tar -xf - path/inside
+```
+
+Caveat: the filelists record what was **on the server**, so they include the
+whisper models and other excluded junk that is deliberately **not** inside
+the tars. The filelist is the inventory, the tar is the archive.
+
 ## Git repos
 
 Every repo was archived with its full `.git` directory, so history is
