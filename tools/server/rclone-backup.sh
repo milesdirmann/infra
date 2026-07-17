@@ -20,3 +20,13 @@ rclone sync "$SRC" "$DST" \
   --exclude '.next/**' --exclude '__pycache__/**' \
   --backup-dir "sbox:backups/.trash/$(date +%Y-%m-%d)" \
   --transfers 4 --log-level NOTICE --log-file /var/log/hetzner-backup.log
+
+# Safety net window: deleted/overwritten files live in dated trash for 30
+# days, then purge. Permanent delete on demand = rclone purge that dir.
+# Guard: trash only exists after the first deletion has been mirrored.
+if rclone lsf "sbox:backups/.trash" --max-depth 1 >/dev/null 2>&1; then
+  rclone delete "sbox:backups/.trash" --min-age 30d \
+    --log-level NOTICE --log-file /var/log/hetzner-backup.log || true
+  rclone rmdirs "sbox:backups/.trash" --leave-root \
+    --log-level NOTICE --log-file /var/log/hetzner-backup.log || true
+fi
