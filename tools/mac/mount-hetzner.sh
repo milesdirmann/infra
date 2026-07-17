@@ -27,14 +27,23 @@ configure() {
   echo "Remotes written. Test with: rclone lsd cpx: && rclone lsd sbox:"
 }
 
+is_mounted() { mount | grep -qF " on $1 "; }
+
 mount_one() { # remote:path  mountpoint  volname
   mkdir -p "$2"
-  mountpoint -q "$2" 2>/dev/null && { echo "$3 already mounted"; return; }
+  if is_mounted "$2"; then
+    # verify the mount is actually alive, not a stale handle from sleep/wake
+    if ls "$2" >/dev/null 2>&1; then echo "$3 already mounted"; return; fi
+    echo "$3 mount is stale; remounting"
+    umount -f "$2" 2>/dev/null || diskutil unmount force "$2" 2>/dev/null || true
+  fi
   rclone mount "$1" "$2" \
     --volname "$3" \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 2G \
     --dir-cache-time 30s \
+    --sftp-idle-timeout 0 \
+    --timeout 30s --contimeout 15s --retries 3 \
     --daemon
   echo "Mounted $3 at $2"
 }
