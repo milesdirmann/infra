@@ -23,6 +23,12 @@ VOL_VPS="${VOL_VPS:-Server}"       # folder name for live VPS projects
 VOL_SBOX="${VOL_SBOX:-Storage}"    # folder name for the 1TB Storage Box
 MNT_BASE="$HOME/Hetzner"
 
+# NOTE: host key pinning (known_hosts_file) was attempted 2026-07-17 and backed
+# out. rclone negotiates a non-ed25519 host key at handshake, so pinning only
+# ed25519 fails with "knownhosts: key mismatch". Doing it right means scanning
+# every host key type and forcing HostKeyAlgorithms; deferred as optional
+# hardening. Connection is already SSH-key authenticated to a static IP.
+
 configure() {
   rclone config create cpx sftp host "$VPS_HOST" user "$VPS_USER" key_file "$HOME/.ssh/id_ed25519"
   # Storage Box speaks SFTP on port 23
