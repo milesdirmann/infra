@@ -14,6 +14,10 @@
     <string>mount</string>
   </array>
   <key>RunAtLoad</key><true/>
+  <!-- Never kill spawned rclone daemons when the agent unloads/reloads:
+       without this, launchctl unload SIGTERMs the whole process group and
+       silently rips both mounts out from under the Finder. -->
+  <key>AbandonProcessGroup</key><true/>
   <!-- Self-healing: re-check every 5 min and remount anything that dropped
        (sleep/wake, Wi-Fi change, VPN flap). mount is idempotent when healthy. -->
   <key>StartInterval</key><integer>300</integer>

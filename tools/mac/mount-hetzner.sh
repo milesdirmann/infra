@@ -43,7 +43,13 @@ mount_one() { # remote:path  mountpoint  volname
     echo "$3 already mounted"; return
   fi
   echo "$3 not healthy (daemons=$n); remounting clean"
-  umount -f "$2" 2>/dev/null || diskutil unmount force "$2" 2>/dev/null || true
+  # timeout guard (macOS has no timeout(1)): umount on a dead NFS mount can
+  # hang forever, wedging the launchd agent and blocking future self-heals
+  run_capped() { "$@" 2>/dev/null & local p=$!
+    ( sleep 15; kill -9 "$p" 2>/dev/null ) & local w=$!
+    wait "$p" 2>/dev/null; kill "$w" 2>/dev/null; }
+  run_capped umount -f "$2"
+  is_mounted "$2" && run_capped diskutil unmount force "$2"
   pkill -f "rclone nfsmount.*$2 " 2>/dev/null || true
   sleep 1
   # -o nobrowse: hide from Finder Locations/desktop — no "localhost", no eject;
