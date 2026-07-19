@@ -49,8 +49,10 @@ fi
 
 # Safety net window: deleted/overwritten files live in dated trash for 30
 # days, then purge. Permanent delete on demand = rclone purge that dir.
-# Guard: trash only exists after the first deletion has been mirrored.
-if rclone lsf "sbox:backups/.trash" --max-depth 1 >/dev/null 2>&1; then
+# Guard: trash only exists after the first deletion has been mirrored. Probe
+# with `size` (returns cleanly on a missing dir) instead of `lsf` (errors).
+if rclone size "sbox:backups/.trash" >/dev/null 2>&1 && \
+   [ -n "$(rclone lsf sbox:backups/.trash 2>/dev/null)" ]; then
   rclone delete "sbox:backups/.trash" --min-age 30d \
     --log-level NOTICE --log-file /var/log/hetzner-backup.log || true
   rclone rmdirs "sbox:backups/.trash" --leave-root \
