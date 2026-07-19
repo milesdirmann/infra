@@ -1,0 +1,26 @@
+# {{NAME}}
+
+One paragraph: what this is, who it serves, current phase.
+
+## Stack
+
+Runtime, framework, database, deploy target. One line each.
+
+## Conventions
+
+Style, structure, testing rules for this repo. No em or en dashes in any copy.
+
+## Boundaries
+
+What agents must not do here (touch prod data, push without asking, print secrets).
+
+## Storage
+
+```yaml
+storage:
+  hot_budget: 2GB
+  cold: none            # or sbox:datasets/{{NAME}}
+  database: none        # or postgres | sqlite
+  deploy: none          # or srv
+  secrets: none         # or doppler
+```
