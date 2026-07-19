@@ -100,6 +100,31 @@ that changed state.
 4. Backup extension: hourly job adds /srv/git and /srv to the mirror.
    Closes the Scriptura gap where app history existed on one server only.
 
+## Secrets
+
+Doppler is the source of truth for machine secrets. 1Password remains the
+home for human passwords. Decided 2026-07-19.
+
+- One Doppler project per server project, same name.
+- The server holds per project scoped service tokens only: a token can read
+  its own project's secrets and nothing else. Token files live at
+  `/etc/doppler/<name>.token`, root only, mode 600.
+- Services run under `doppler run` so secrets exist in process memory, not
+  on disk. Systemd units for srv deploys wrap ExecStart accordingly.
+- Offline resilience: `doppler run --fallback` keeps an encrypted local
+  cache per project. Generated, never hand edited, never committed.
+- Secrets are regenerable from Doppler, therefore ephemeral tier: `.env*`
+  and fallback caches are globally gitignored and excluded from the hourly
+  backup. No plaintext secret ever lands on the Storage Box.
+- Global AGENTS.md boundary: agents never print secret values and never
+  copy them into files; access is only through doppler run.
+- The storage block in AGENTS.md gains one line:
+  `secrets: none | doppler`.
+- Migration doubles as rotation: as each key moves into Doppler it gets
+  rotated at the provider, retiring the keys exposed in chat in March 2026.
+- Miles' one time setup: doppler login, create the projects, paste current
+  secrets in. Scaffold and scan handle the rest.
+
 ## Error handling and edge cases
 
 - scan.sh must not die on a broken project: per project failures are
