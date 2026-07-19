@@ -13,13 +13,39 @@ set -euo pipefail
 SRC="${SRC:-/root/projects}"
 DST="${DST:-sbox:backups/projects}"
 
+# Shared excludes: regenerable output, and secrets (Doppler is the source of
+# truth, no plaintext secret ever reaches the box).
+EXCLUDES=(
+  --exclude 'node_modules/**'
+  --exclude '.venv/**' --exclude 'venv/**'
+  --exclude 'target/**' --exclude 'dist/**' --exclude 'build/**'
+  --exclude '.next/**' --exclude '__pycache__/**'
+  --exclude '.env' --exclude '.env.*' --exclude '*.env' --exclude '.doppler-fallback*'
+)
+
 rclone sync "$SRC" "$DST" \
-  --exclude 'node_modules/**' \
-  --exclude '.venv/**' --exclude 'venv/**' \
-  --exclude 'target/**' --exclude 'dist/**' --exclude 'build/**' \
-  --exclude '.next/**' --exclude '__pycache__/**' \
+  "${EXCLUDES[@]}" \
   --backup-dir "sbox:backups/.trash/$(date +%Y-%m-%d)" \
   --transfers 4 --log-level NOTICE --log-file /var/log/hetzner-backup.log
+
+# /srv (deployed apps + bare git repos): not on GitHub, single-server risk.
+if [ -d /srv ]; then
+  rclone sync /srv "sbox:backups/srv" \
+    "${EXCLUDES[@]}" \
+    --backup-dir "sbox:backups/.trash/$(date +%Y-%m-%d)" \
+    --transfers 4 --log-level NOTICE --log-file /var/log/hetzner-backup.log
+fi
+
+# Project scan + overview page, generated fresh each run.
+PROJ_TOOLS=/root/infra/tools/projects
+if [ -x "$PROJ_TOOLS/scan.sh" ]; then
+  bash "$PROJ_TOOLS/scan.sh" /root/projects /srv/git /root/infra/dashboard/projects.json \
+    >> /var/log/hetzner-backup.log 2>&1 || true
+  python3 "$PROJ_TOOLS/generate.py" /root/infra/dashboard/projects.json \
+    /root/infra/dashboard/projects.html >> /var/log/hetzner-backup.log 2>&1 || true
+  rclone copy /root/infra/dashboard/projects.html sbox:backups/pages \
+    --log-level NOTICE --log-file /var/log/hetzner-backup.log || true
+fi
 
 # Safety net window: deleted/overwritten files live in dated trash for 30
 # days, then purge. Permanent delete on demand = rclone purge that dir.

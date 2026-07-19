@@ -1,0 +1,9 @@
+# secrets: sourced from Doppler, never committed
+.env
+.env.*
+*.env
+.doppler-fallback*
+/etc/doppler/*.token
+
+# os / editor cruft
+.DS_Store
