@@ -29,3 +29,11 @@ dependency.
 - `tmux ls` etc. real subcommands pass straight through.
 - `p <name>`     open/resume a project session: named tmux, cd'd into
                  /root/projects/<name>, ready for `claude`. Tab-completes.
+
+## Auto-restore at boot
+
+`/etc/systemd/system/tmux.service` (enabled) starts a tmux server at boot,
+which triggers continuum's restore. Verified: after a simulated reboot, saved
+sessions came back automatically before any connect. Session layout, panes,
+and directories restore; live processes (an active `claude`) do not resume,
+you re-run them in the restored pane.
