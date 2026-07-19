@@ -37,3 +37,14 @@ which triggers continuum's restore. Verified: after a simulated reboot, saved
 sessions came back automatically before any connect. Session layout, panes,
 and directories restore; live processes (an active `claude`) do not resume,
 you re-run them in the restored pane.
+
+## Fast path: mosh (installed 2026-07-19)
+
+The lag driving this: 159 ms RTT Memphis to Helsinki, multiplied by VS Code's
+slow integrated terminal renderer. Fix is transport + renderer:
+
+- mosh 1.4.0 on both ends; ufw allows 60000:61000/udp on the CX33.
+- Workflow: Terminal.app -> `mosh server` -> `tmux` -> claude.
+  Instant local echo, survives sleep and network changes.
+- VS Code Remote stays for editing files only, not for driving agents.
+- Optional next tier: a GPU terminal (Ghostty, kitty) if more speed wanted.
