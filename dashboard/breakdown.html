@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infrastructure Breakdown</title>
+<style>
+  @font-face {
+    font-family: 'Geist';
+    src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
+    font-weight: 100 900; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Geist Mono';
+    src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/GeistMono-Variable.woff2') format('woff2');
+    font-weight: 100 900; font-display: swap;
+  }
+  :root {
+    --paper: #FAFAF8; --panel: #FFFFFF; --ink: #101014; --muted: #71717A;
+    --faint: #A1A1AA; --line: #E5E5E1; --line-dark: #18181B;
+    --go: #17803D; --hold: #A16207; --stop: #B3261E;
+    --sans: 'Geist', -apple-system, 'Helvetica Neue', sans-serif;
+    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--sans); background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px 96px; }
+  a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--faint); }
+  .eyebrow { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .mono { font-family: var(--mono); }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+  .dot.go { background: var(--go); } .dot.hold { background: var(--hold); } .dot.stop { background: var(--stop); }
+
+  header { padding: 56px 0 0; }
+  .mast-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: clamp(38px, 6vw, 58px); font-weight: 560; letter-spacing: -0.035em; line-height: 1.02; margin-top: 10px; text-wrap: balance; }
+  .mast-sub { color: var(--muted); max-width: 620px; margin-top: 14px; }
+
+  .strip { margin-top: 36px; border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; }
+  .strip > div { padding: 14px 20px 16px; border-left: 1px solid var(--line); }
+  .strip > div:first-child { border-left: 0; padding-left: 0; }
+  .strip .val { font-family: var(--mono); font-size: 15px; margin-top: 4px; display: block; }
+  .strip .val b { font-weight: 600; }
+
+  section { margin-top: 72px; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; border-top: 1px solid var(--line-dark); padding-top: 12px; margin-bottom: 26px; gap: 16px; }
+  .sec-head h2 { font-size: 19px; font-weight: 560; letter-spacing: -0.015em; }
+  .lede { color: var(--muted); max-width: 660px; margin: -12px 0 26px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 0 16px 10px 0; border-bottom: 1px solid var(--line-dark); }
+  td { padding: 13px 16px 13px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.m { font-family: var(--mono); font-size: 13px; }
+  td .sub { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .flow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .flow .node { border: 1px solid var(--line-dark); background: var(--panel); padding: 16px 18px; }
+  .flow .node h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .flow .node p { font-size: 13px; color: var(--muted); }
+  .flow .node .tag { font-family: var(--mono); font-size: 10px; color: var(--muted); display: block; margin-top: 10px; }
+
+  .tiers { display: grid; gap: 0; }
+  .tier { display: grid; grid-template-columns: 130px 1fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .tier:last-child { border-bottom: 0; }
+  .tier .name { font-weight: 600; }
+  .tier .name .loc { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 400; }
+  .tier .desc { color: var(--muted); font-size: 14px; }
+  .tier .desc b { color: var(--ink); font-weight: 600; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+
+  .card { border: 1px solid var(--line-dark); background: var(--panel); padding: 22px 26px; }
+  .card h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .card ul { list-style: none; }
+  .card li { padding: 6px 0; font-size: 14px; color: var(--muted); display: flex; gap: 10px; }
+  .card li b { color: var(--ink); font-weight: 600; }
+  .pill { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; padding: 1px 8px; border-radius: 99px; border: 1px solid currentColor; white-space: nowrap; }
+  .pill.go { color: var(--go); } .pill.hold { color: var(--hold); } .pill.stop { color: var(--stop); }
+
+  .todo { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+  .todo:last-child { border-bottom: 0; }
+  .todo .who { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stop); border: 1px solid currentColor; padding: 2px 8px; border-radius: 99px; margin-top: 2px; white-space: nowrap; }
+  .todo .body b { font-weight: 600; }
+  .todo .body p { color: var(--muted); font-size: 13px; margin-top: 3px; }
+
+  footer { margin-top: 88px; border-top: 1px solid var(--line-dark); padding-top: 16px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .wrap { padding: 0 20px 64px; }
+    .strip { grid-template-columns: 1fr 1fr; }
+    .strip > div { border-left: 0; padding-left: 0; }
+    .cols, .flow { grid-template-columns: 1fr; gap: 40px; }
+    .flow { gap: 14px; }
+    .tier { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="mast-top">
+    <span class="eyebrow">Personal OS / Infra breakdown</span>
+    <span class="eyebrow">2026-07-19</span>
+  </div>
+  <h1>The setup, end to end</h1>
+  <p class="mast-sub">One dev server, one storage tier, one laptop, one phone, all pointing
+  at the same files. What each machine is, how data moves, and the two or three things still
+  waiting on you. This is the finished state after the migration.</p>
+
+  <div class="strip">
+    <div><span class="eyebrow">Fixed spend</span><span class="val"><b>~10</b> USD/mo</span></div>
+    <div><span class="eyebrow">Was</span><span class="val">~25 USD/mo</span></div>
+    <div><span class="eyebrow">Region</span><span class="val">HEL / Helsinki</span></div>
+    <div><span class="eyebrow">Archived + verified</span><span class="val num">44.1 GiB</span></div>
+  </div>
+</header>
+
+<!-- ============ THE MACHINES ============ -->
+<section>
+  <div class="sec-head"><h2>The machines</h2><span class="eyebrow">FLT / four roles</span></div>
+  <p class="lede">Each machine does exactly one job. Nothing overlaps, so there is never a
+  question of where a thing lives.</p>
+  <table>
+    <thead><tr><th>Machine</th><th>What it is</th><th>Its one job</th><th>Cost</th><th>State</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>CX33</b><span class="sub mono">89.167.110.196</span></td>
+        <td>4 vCPU, 8 GB, 80 GB NVMe<span class="sub">Helsinki, hardened</span></td>
+        <td>The dev server. All code, all agents, all services run here.</td>
+        <td class="m">~6 EUR</td>
+        <td><span class="dot go"></span>Live</td>
+      </tr>
+      <tr>
+        <td><b>Storage Box</b><span class="sub mono">u634219 :23</span></td>
+        <td>1 TB, SFTP only<span class="sub">Helsinki, 4.3% used</span></td>
+        <td>Cold storage. Archives and the hourly backup mirror.</td>
+        <td class="m">~4 USD</td>
+        <td><span class="dot go"></span>Live</td>
+      </tr>
+      <tr>
+        <td><b>Modal</b><span class="sub mono">modal run</span></td>
+        <td>Serverless burst compute</td>
+        <td>Heavy one-off jobs that would choke the 8 GB server.</td>
+        <td class="m">free</td>
+        <td><span class="dot go"></span>Standby</td>
+      </tr>
+      <tr>
+        <td><b>Mac + iPhone</b><span class="sub">your devices</span></td>
+        <td>Clients only, no vital data</td>
+        <td>Windows into the server. VS Code, Finder, Files app.</td>
+        <td class="m">owned</td>
+        <td><span class="dot go"></span>Configured</td>
+      </tr>
+      <tr>
+        <td><b>CPX31</b><span class="sub mono">5.78.108.176</span></td>
+        <td>Old server, Oregon</td>
+        <td>Retired. Fully archived, waiting for you to delete it.</td>
+        <td class="m">~25 USD</td>
+        <td><span class="dot stop"></span>Delete me</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ HOW DATA MOVES ============ -->
+<section>
+  <div class="sec-head"><h2>How your devices see the files</h2><span class="eyebrow">RTE / one source</span></div>
+  <p class="lede">Every device points at the same files on the server. Nothing is duplicated.
+  Open something and it streams from Helsinki; edit it and the change is on the server in seconds.</p>
+  <div class="flow">
+    <div class="node">
+      <h3>On the Mac</h3>
+      <p>Two folders, <span class="mono">~/Hetzner/Server</span> and <span class="mono">Storage</span>,
+      behave like normal local folders. VS Code Remote for real coding.</p>
+      <span class="tag">Finder + VS Code Remote-SSH</span>
+    </div>
+    <div class="node">
+      <h3>On the iPhone</h3>
+      <p>Server and Storage appear inside the Files app, alongside iCloud. Open a Word doc,
+      edit, save, all on the server.</p>
+      <span class="tag">Secure ShellFish, key pending</span>
+    </div>
+    <div class="node">
+      <h3>For agents</h3>
+      <p>Claude runs on the server itself, next to the code on fast disk. Never through the
+      Mac mount, so it stays instant.</p>
+      <span class="tag">ssh server, tmux, claude</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STORAGE CONTRACT ============ -->
+<section>
+  <div class="sec-head"><h2>Where everything belongs</h2><span class="eyebrow">PRN / four tiers</span></div>
+  <p class="lede">The rule every agent follows without guessing. This is what keeps storage from
+  turning back into a mess as projects multiply.</p>
+  <div class="tiers">
+    <div class="tier">
+      <div class="name">Code<span class="loc">GitHub</span></div>
+      <div class="desc">The source of truth for anything that is code. <b>A repo on only one machine does not exist.</b></div>
+    </div>
+    <div class="tier">
+      <div class="name">Hot<span class="loc">CX33 /root/projects, /srv</span></div>
+      <div class="desc">Working files, running services, active data. Under a few GB. <b>Mirrored to the Storage Box every hour.</b></div>
+    </div>
+    <div class="tier">
+      <div class="name">Cold<span class="loc">Storage Box</span></div>
+      <div class="desc">Large data, old projects, permanent archives. Streamed on demand. <b>This tier is the backup.</b></div>
+    </div>
+    <div class="tier">
+      <div class="name">Ephemeral<span class="loc">nowhere</span></div>
+      <div class="desc">node_modules, caches, build output. Regenerable, so it is <b>excluded from backup by design.</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECT SYSTEM ============ -->
+<section>
+  <div class="sec-head"><h2>The project system</h2><span class="eyebrow">PRJ / built today</span></div>
+  <p class="lede">Every project carries its own context so agents never start cold, and a page
+  that regenerates hourly from facts that cannot lie.</p>
+  <div class="cols">
+    <div class="card">
+      <h3>Three files per project</h3>
+      <ul>
+        <li><b>AGENTS.md</b><span>What it is, stack, conventions, boundaries, storage. Durable.</span></li>
+        <li><b>CLAUDE.md</b><span>Two-line router to AGENTS.md. Works for any AI tool.</span></li>
+        <li><b>STATUS.md</b><span>Now, next, decisions, blocked. The handoff note.</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Automatic, hourly</h3>
+      <ul>
+        <li><b>Scan</b><span>Last commit, uncommitted work, idle days, disk vs budget, service state.</span></li>
+        <li><b>Overview page</b><span>Every project, staleness and overruns flagged. On Mac and phone.</span></li>
+        <li><b>Scaffold</b><span><span class="mono">new-project.sh</span> creates a ready project in seconds.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAFETY + SECRETS ============ -->
+<section>
+  <div class="sec-head"><h2>Safety nets and secrets</h2><span class="eyebrow">SEC / how you sleep</span></div>
+  <div class="cols">
+    <div class="card">
+      <h3>If something breaks</h3>
+      <ul>
+        <li><span class="pill go">hourly</span><span>Server mirrors to the Storage Box, deletes kept 30 days.</span></li>
+        <li><span class="pill go">verified</span><span>The old server is 44.1 GiB archived, every file checksum-matched.</span></li>
+        <li><span class="pill hold">recommended</span><span>Storage Box daily snapshots, a 2-minute toggle in your console.</span></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Secrets</h3>
+      <ul>
+        <li><b>Doppler</b><span>One dashboard, per-project scoped tokens. An agent in one project cannot read another's keys.</span></li>
+        <li><b>Never on disk</b><span>Secrets inject at runtime, never committed, never backed up in plaintext.</span></li>
+        <li><b>1Password</b><span>Stays home for your human passwords and logins.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ YOUR MOVE ============ -->
+<section>
+  <div class="sec-head"><h2>Waiting on you</h2><span class="eyebrow">TODO / short list</span></div>
+  <p class="lede">Everything else is done and running. These are the few things only you can do.</p>
+  <div class="todo">
+    <span class="who">you</span>
+    <div class="body"><b>Delete the CPX31</b>
+      <p>Fully archived and verified. Deleting it stops the ~25 USD/mo, which is the whole point of the migration. Hetzner console, one click. No snapshot needed.</p></div>
+  </div>
+  <div class="todo">
+    <span class="who">you</span>
+    <div class="body"><b>Paste the iPhone key</b>
+      <p>Secure ShellFish generated an SSH key. Send me its public line and Server plus Storage light up in your Files app. A capture hook on the server is armed to grab it on your next connect.</p></div>
+  </div>
+  <div class="todo">
+    <span class="who">you</span>
+    <div class="body"><b>Doppler login, once</b>
+      <p>Run <span class="mono">doppler login</span> on the server the first time a project needs secrets. Everything after is automated.</p></div>
+  </div>
+  <div class="todo">
+    <span class="who">optional</span>
+    <div class="body"><b>Storage Box sub-account for backups</b>
+      <p>Scope the server's backup access so a runaway agent cannot reach the permanent archive. Five minutes in the console, meaningfully smaller blast radius.</p></div>
+  </div>
+</section>
+
+<footer>
+  <span>Personal OS &#183; milesdirmann/infra &#183; dashboard/breakdown.html</span>
+  <span>finished state, 2026-07-19</span>
+</footer>
+
+</div>
+</body>
+</html>
