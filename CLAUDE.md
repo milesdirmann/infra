@@ -4,7 +4,24 @@ This repo is the source of truth for Miles' personal dev infrastructure:
 runbooks, scripts, and a local HTML dashboard (`dashboard/index.html` — open it
 in a browser; it's the human-facing overview of everything below).
 
-## Current state (updated 2026-07-17)
+## Current state (updated 2026-07-19)
+
+Migration executed and verified. CX33 is the live dev server (hardened, Node
+22 + Claude Code + gh + tmux installed). CPX31 fully archived to the Storage
+Box (44.1 GiB, all 10 archives sha256-verified end to end incl. /root/.claude
+and /root/claude-memory) and is safe to delete, pending Miles. Hourly backup
+covers /root/projects AND /srv, excludes secrets, runs the project scan +
+overview page generation. Project system built and deployed (tools/projects/:
+templates, scan.sh, generate.py, new-project.sh; AGENTS.md canonical +
+CLAUDE.md router + STATUS.md per project; four-tier storage contract; Doppler
+scoped secrets). Dashboard has three pages: index (infra), projects.html
+(hourly-generated), breakdown.html (end-to-end walkthrough).
+
+Pending on Miles: (1) delete CPX31, (2) paste iPhone Secure ShellFish public
+key (capture hook armed on CX33), (3) `doppler login` when first project needs
+secrets, (4) optional Storage Box sub-account to scope backup writes.
+
+## Prior state (2026-07-17)
 
 **Goal:** cut fixed costs from ~$25/mo to ~$10/mo and cleanly split
 compute/storage. Old CPX31 is being decommissioned.
