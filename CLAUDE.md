@@ -11,7 +11,7 @@ compute/storage. Old CPX31 is being decommissioned.
 
 | Machine | Details | Role |
 |---|---|---|
-| CX33 "cx33-server" | 89.167.110.196 · Helsinki · 4 vCPU/8GB/80GB | New primary dev server (fresh, not yet set up) |
+| CX33 "cx33-server" | 89.167.110.196 · Helsinki · 4 vCPU/8GB/80GB | Primary dev server. Hosts Scriptura (`docs/scriptura-on-cx33.md`) |
 | Storage Box "cold-storage" | u634219.your-storagebox.de · SFTP port 23 · BX11 1TB · Helsinki | Archives + hourly backup target |
 | CPX31 | 5.78.108.176 · Hillsboro OR | OLD — migrate off, then delete (~$25/mo saved) |
 | Modal | $30/mo free credits | Burst compute (`modal run`), never storage |
@@ -53,6 +53,19 @@ all scripts are written but unrun. Order:
 - Secrets (future): Doppler for machine secrets, 1Password for human passwords.
 - Heavy compute goes to Modal, not a bigger VPS. Hetzner rescale is the
   escape hatch (CPU/RAM-only resize is reversible; disk grow is not).
+
+### Application hosting (added 2026-07-19)
+
+- First app service on CX33 is **Scriptura** — see `docs/scriptura-on-cx33.md`.
+  Pattern for future apps: bare repo in `/srv/git/<app>.git` with a
+  `post-receive` build hook, checkout in `/srv/<app>` owned by root and
+  group-readable by a dedicated `--system` user, a hardened systemd unit
+  bound to loopback, and **Caddy** on :80/:443 as the single public entry.
+- Caddy (not nginx) is the chosen reverse proxy: automatic Let's Encrypt once
+  a domain exists. Access logs go to the journal, not `/var/log/caddy`
+  (the packaged unit's sandbox blocks writes there).
+- Caveat: Scriptura is not on GitHub, so the "active work is on GitHub"
+  recovery assumption does not cover it until backups or a remote exist.
 
 ## Personal OS
 
