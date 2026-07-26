@@ -58,3 +58,29 @@ gets the Let's Encrypt certificate on its own.
 - `GROQ_API_KEY` is not set, so voice recitation returns 501 and the client
   hides the mic. Add via `systemctl edit scriptura` when wanted.
 - No TLS until a domain exists (see above).
+
+## Domain (added 2026-07-25)
+
+`api.scouq.com` → 89.167.110.196, A record, **DNS-only** (not proxied — Caddy
+needs to answer the ACME HTTP-01 challenge itself). The record previously
+pointed at the decommissioned CPX31 and was repointed, not created.
+
+Caddy serves the hostname and the bare IP from the same site block and holds a
+Let's Encrypt certificate for it. `ufw` now allows 443/tcp.
+
+The iOS bundle defaults `SCRIPTURA_API_BASE` to `https://api.scouq.com`
+(`vite.cap.config.ts`), because the native build is served from
+`capacitor://localhost` and has no origin of its own. Without it the
+translation picker and account section silently render nothing.
+
+`YOUVERSION_API_KEY` is set via `/etc/systemd/system/scriptura.service.d/10-youversion.conf`
+(mode 600). It is issued under **non-commercial terms** and is valid only while
+Scriptura ships free — remove it before any paid build. Verify with
+`curl 'https://api.scouq.com/api/bible?op=versions'`.
+
+### Still open
+- Course video: YouTube embeds cannot play from a `capacitor://` origin
+  (Error 153) and no client config fixes it — WKWebView reserves http/https.
+  The fix is a small embed page served from this host so the request to YouTube
+  carries a real https referrer. Not built yet. See the app repo's
+  `docs/COURSE-VIDEO.md`.
