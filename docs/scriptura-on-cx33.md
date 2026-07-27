@@ -84,3 +84,25 @@ Scriptura ships free — remove it before any paid build. Verify with
   The fix is a small embed page served from this host so the request to YouTube
   carries a real https referrer. Not built yet. See the app repo's
   `docs/COURSE-VIDEO.md`.
+
+## The course-video shim (added 2026-07-27)
+
+`/srv/scriptura/site/embed.html`, served at **https://api.scouq.com/embed?v=<id>**
+via a `handle /embed` block in the Caddyfile.
+
+Why it exists: YouTube's player refuses any framing origin that is not
+http(s), and the iOS app is served from `capacitor://localhost`. Every course
+video failed with "Error 153" and no client-side setting could fix it, because
+WKWebView reserves http/https and will not hand them to a custom scheme
+handler. The app frames this page instead; the request to YouTube then carries
+a genuine https referrer. That the page is itself framed from `capacitor://`
+is not something the embed checks.
+
+Verified playing in the app on 2026-07-27.
+
+It validates the id against `^[A-Za-z0-9_-]{11}$` before framing anything and
+forwards only fixed player flags, so it cannot be turned into a frame for
+arbitrary third-party content by anyone who can hand someone a link.
+
+Dependency-free and cached for 5 minutes. It is on the critical path for every
+course video, so keep it boring.
