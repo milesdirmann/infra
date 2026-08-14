@@ -28,7 +28,7 @@ compute/storage. Old CPX31 is being decommissioned.
 
 | Machine | Details | Role |
 |---|---|---|
-| CX33 "cx33-server" | 89.167.110.196 · Helsinki · 4 vCPU/8GB/80GB | Primary dev server. Hosts Tabernacle (`docs/tabernacle-on-cx33.md`) and n8n. Scriptura was retired 2026-08-14 (`docs/scriptura-on-cx33.md`) |
+| CX33 "cx33-server" | 89.167.110.196 · Helsinki · 4 vCPU/8GB/80GB | Primary dev server. Hosts Tabernacle + n8n (`docs/tabernacle-on-cx33.md`) and Nango (`docs/nango-on-cx33.md`). Scriptura retired 2026-08-14 (`docs/scriptura-on-cx33.md`) |
 | Storage Box "cold-storage" | u634219.your-storagebox.de · SFTP port 23 · BX11 1TB · Helsinki | Archives + hourly backup target |
 | CPX31 | 5.78.108.176 · Hillsboro OR | OLD — migrate off, then delete (~$25/mo saved) |
 | Modal | $30/mo free credits | Burst compute (`modal run`), never storage |
