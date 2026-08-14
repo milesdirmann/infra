@@ -44,6 +44,35 @@ Nango covers everything.
 | Connect UI port | `127.0.0.1:3009` | Loopback only |
 | Database | not published | Deliberately no host port |
 
+## Logging in: `FLAG_AUTH_ENABLED` reads backwards
+
+Set it to **`false`**. The name suggests it turns authentication off; what it
+actually does is documented in Nango's own `.env.example`:
+
+> Uncommenting those env vars will disable regular login, signup and enable
+> basic auth protection.
+
+So `false` means "no public account system, use HTTP basic auth with
+`NANGO_DASHBOARD_USERNAME` / `NANGO_DASHBOARD_PASSWORD`", which is what a
+single-operator self-hosted instance wants. Setting it to `true` enables
+Nango's own email and password account system **including an open `/signup`
+page**, which on a public hostname means anyone on the internet can register
+on your instance. That happened here on 2026-08-14 and was open for roughly
+fifteen minutes before being closed; no accounts were created.
+
+Verify after any change to this flag:
+
+```sh
+curl -sI https://<host>/api/v1/basic | grep -i 'HTTP/\|www-authenticate'
+# want: 401 + www-authenticate: Basic realm="Users"
+curl -s -o /dev/null -w '%{http_code}\n' -X POST https://<host>/api/v1/account/signup
+# want: 404, meaning the signup route does not exist
+```
+
+Checking that `/signup` returns 404 is not enough on its own, because the
+frontend is a single-page app: every path returns the HTML shell with a 200
+whether or not anything backs it. Test the API, not the page.
+
 ## Two things that will bite if forgotten
 
 **`NANGO_ENCRYPTION_KEY` is the whole thing.** It encrypts every customer's
