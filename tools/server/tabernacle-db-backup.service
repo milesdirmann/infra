@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly pg_dump of Tabernacle Supabase to Storage Box
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/tabernacle-db-backup.sh
+Nice=10
+IOSchedulingClass=idle

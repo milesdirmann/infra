@@ -28,7 +28,7 @@ compute/storage. Old CPX31 is being decommissioned.
 
 | Machine | Details | Role |
 |---|---|---|
-| CX33 "cx33-server" | 89.167.110.196 · Helsinki · 4 vCPU/8GB/80GB | Primary dev server. Hosts Scriptura (`docs/scriptura-on-cx33.md`) |
+| CX33 "cx33-server" | 89.167.110.196 · Helsinki · 4 vCPU/8GB/80GB | Primary dev server. Hosts Tabernacle (`docs/tabernacle-on-cx33.md`) and n8n. Scriptura was retired 2026-08-14 (`docs/scriptura-on-cx33.md`) |
 | Storage Box "cold-storage" | u634219.your-storagebox.de · SFTP port 23 · BX11 1TB · Helsinki | Archives + hourly backup target |
 | CPX31 | 5.78.108.176 · Hillsboro OR | OLD — migrate off, then delete (~$25/mo saved) |
 | Modal | $30/mo free credits | Burst compute (`modal run`), never storage |
@@ -73,16 +73,27 @@ all scripts are written but unrun. Order:
 
 ### Application hosting (added 2026-07-19)
 
-- First app service on CX33 is **Scriptura** — see `docs/scriptura-on-cx33.md`.
-  Pattern for future apps: bare repo in `/srv/git/<app>.git` with a
-  `post-receive` build hook, checkout in `/srv/<app>` owned by root and
-  group-readable by a dedicated `--system` user, a hardened systemd unit
-  bound to loopback, and **Caddy** on :80/:443 as the single public entry.
+- The deploy pattern, first proven by Scriptura and still the standard: bare
+  repo in `/srv/git/<app>.git` with a `post-receive` build hook, checkout in
+  `/srv/<app>` owned by root and group-readable by a dedicated `--system`
+  user, a hardened systemd unit bound to loopback, and **Caddy** on :80/:443
+  as the single public entry.
 - Caddy (not nginx) is the chosen reverse proxy: automatic Let's Encrypt once
   a domain exists. Access logs go to the journal, not `/var/log/caddy`
   (the packaged unit's sandbox blocks writes there).
-- Caveat: Scriptura is not on GitHub, so the "active work is on GitHub"
-  recovery assumption does not cover it until backups or a remote exist.
+- **Scriptura was retired 2026-08-14.** The project is discontinued. Service,
+  checkout, bare repo, and the `scriptura` user are gone; everything is
+  archived to `sbox:archive/scriptura-retired-2026-08-14/` (app tree, bare
+  repo, unit file, and the prior Caddyfile). It had no GitHub remote, so that
+  archive is the only copy: do not prune it without a decision to lose the
+  project permanently.
+- `api.scouq.com` used to reverse-proxy to Scriptura on `127.0.0.1:3000`,
+  which is why a Scouq hostname served a Scripture memorization app. It now
+  returns 410 and is reserved. The block is kept so Caddy keeps renewing the
+  certificate, which lets Scouq OS claim the name later without a TLS
+  scramble. Note `scouq-api.service` on `127.0.0.1:8300` is vestigial: the
+  marketing site was rebuilt 2026-08-11 to capture into Supabase from its own
+  Next routes, and has never called this host.
 
 ## Personal OS
 

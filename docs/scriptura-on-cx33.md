@@ -1,4 +1,21 @@
-# Scriptura on CX33
+# Scriptura on CX33 (RETIRED 2026-08-14)
+
+> **This service no longer exists.** The project was discontinued and removed
+> from CX33 on 2026-08-14: `scriptura.service`, `/srv/scriptura`,
+> `/root/scriptura`, `/srv/git/scriptura.git`, and the `scriptura` system user
+> are all gone, and the Caddy routes that served it were dropped.
+>
+> Everything is archived to `sbox:archive/scriptura-retired-2026-08-14/`: the
+> app tree and checkout, the bare repo (1,413 entries), the systemd unit, and
+> the Caddyfile as it stood before. Scriptura had no GitHub remote, so **that
+> archive is the only surviving copy.**
+>
+> `api.scouq.com` used to proxy here, which is why a Scouq hostname served a
+> Scripture memorization app. It now returns 410 and is reserved for Scouq OS.
+>
+> The rest of this document is kept as the record of how it was deployed. The
+> bare-repo plus systemd plus Caddy pattern it established is still the
+> standard for new apps on the box.
 
 First application service on CX33. Set up 2026-07-19.
 
