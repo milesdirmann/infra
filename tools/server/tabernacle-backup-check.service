@@ -1,0 +1,8 @@
+[Unit]
+Description=Verify a recent Tabernacle backup exists locally and offsite
+OnFailure=tabernacle-alert@%n.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/tabernacle-backup-check.sh

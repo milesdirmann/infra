@@ -55,8 +55,37 @@ A backup of the pre-Tabernacle Caddyfile is at
   The direct DB host is IPv6-only and unreachable from CX33 — the env file must
   hold the **session pooler** string (IPv4). Files mirrored in
   `tools/server/tabernacle-db-backup.*`.
-  - ⚠️ `DATABASE_URL` is still empty — the first run will fail until the pooler
-    string from the Supabase dashboard (Connect → Session pooler) is pasted in.
+  - ✅ Working since 2026-09-02. Verified by a full restore into a scratch
+    database: 124 public tables, 23 auth tables, 18,203 ledger rows, 7 auth
+    users. The only restore errors are the `cron` and `supabase_vault`
+    extensions, which a plain Postgres box lacks and a real Supabase target
+    has.
+  - ⚠️ **The pooler host is `aws-1-us-east-2`, not `aws-0`.** An `aws-0` string
+    fails with `FATAL: (ENOTFOUND) tenant/user ... not found`, which reads like
+    a bad password but is a wrong address. To tell them apart, connect with a
+    deliberately wrong password: the correct host answers "password
+    authentication failed" because it knows the tenant. Take the string from
+    the dashboard (Connect → Session pooler) rather than typing it by hand.
+  - Paste the password without it passing through a chat transcript:
+    ```
+    pbpaste | tr -d '\n' | python3 -c 'import sys,urllib.parse;print("DATABASE_URL=postgresql://postgres.dctubowsymgmgdvfqhbc:"+urllib.parse.quote(sys.stdin.read(),safe="")+"@aws-1-us-east-2.pooler.supabase.com:5432/postgres")' | ssh server 'umask 077; { grep -v "^DATABASE_URL=" /root/.tabernacle-db.env; cat; } > /root/.tabernacle-db.env.new && mv /root/.tabernacle-db.env.new /root/.tabernacle-db.env && chmod 600 /root/.tabernacle-db.env && systemctl start tabernacle-db-backup.service'
+    ```
+
+- **Failure alerting** (added 2026-09-02). The backup failed silently every
+  night from late July to 2026-09-02: it logged to journald and nobody was
+  watching. Two guards now exist, mirrored in `tools/server/`:
+  - `tabernacle-alert@.service` is an `OnFailure=` handler on the backup unit,
+    so a failed run pushes a notification immediately. It reads
+    `ALERT_NTFY_TOPIC` (ntfy.sh, no account required) or `ALERT_WEBHOOK_URL`
+    from `/root/.tabernacle-db.env`, logs to syslog, and writes
+    `/var/lib/tabernacle-backup-alert.last` either way. Alert text names only
+    the host and the job, never data, because it travels to a third party.
+  - `tabernacle-backup-check.timer` runs daily at 12:00 UTC and alerts if no
+    dump newer than 30h exists locally or on the Storage Box. This is the one
+    that catches the timer silently not firing at all, which an `OnFailure=`
+    hook by definition cannot.
+  - Subscribe to the topic in the ntfy app to receive them. Rotate by editing
+    `ALERT_NTFY_TOPIC`; the topic name is the only thing keeping it private.
 
 ## Open items
 

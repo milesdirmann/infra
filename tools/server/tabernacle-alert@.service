@@ -1,0 +1,7 @@
+[Unit]
+Description=Alert that %i failed
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/tabernacle-alert.sh "%i failed on cx33 - check: journalctl -u %i -n 30"
