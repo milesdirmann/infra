@@ -4,6 +4,12 @@ This repo is the source of truth for Miles' personal dev infrastructure:
 runbooks, scripts, and a local HTML dashboard (`dashboard/index.html` — open it
 in a browser; it's the human-facing overview of everything below).
 
+## CX33 is being retired (2026-10-09)
+
+Everything it ran has moved or been archived; see `docs/cx33-decommission.md`
+for what went where and the four steps left before deleting it. The sections
+below describe the fleet as it was.
+
 ## Current state (updated 2026-07-19)
 
 Migration executed and verified. CX33 is the live dev server (hardened, Node
