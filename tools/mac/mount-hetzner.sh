@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# RETIRED 2026-10-12: the CX33 and Storage Box are being shut down; this job is disabled
+# (plist moved to ~/Library/LaunchAgents/_disabled/). Kept as history only.
 # Mount Hetzner locations as Finder volumes via rclone nfsmount (no FUSE needed).
 # This is THE Finder integration (chosen 2026-07-16, free). Mountain Duck is
 # the optional paid upgrade if cloud badges / offline pinning are ever wanted

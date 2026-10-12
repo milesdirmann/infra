@@ -27,27 +27,41 @@ Also already on the box: `backups/srv`, `backups/tabernacle-db`,
 `backups/ophiri-archive`, `archive/scriptura-retired-2026-08-14`,
 `archive/nango-secrets-2026-08-14`, `cpx31/`.
 
-## Steps left for Miles (nothing on the server needs saving first)
+## Storage Box contents copied to the Mac (2026-10-11/12)
 
-1. **Set the backup secret**, then run the workflow once to prove it:
-   ```
-   ssh server 'set -a; . /root/.tabernacle-db.env; printf %s "$DATABASE_URL"' | gh secret set DATABASE_URL --repo milesdirmann/tabernacle
-   gh workflow run db-backup.yml --repo milesdirmann/tabernacle
-   ```
-   (Run it yourself: the connection string carries the DB password and was
-   deliberately not moved by an agent.) Until it is set, the nightly run fails
-   with a clear message and GitHub emails you.
-2. **Cloudflare DNS:** delete the A records pointing at `89.167.110.196`
-   (`db.ophiri.com`, `api.scouq.com`, and any others). A freed Hetzner IP gets
-   reassigned, and a dangling record would point your hostname at a stranger.
-3. **Mac:** remove `Host server` from `~/.ssh/config`; drop the `Server` volume
-   from `tools/mac/mount-hetzner.sh` (the same launchd job also mounts the
-   Storage Box, so do not unload it); `git remote remove cx33` in
-   `~/Tabernacle/app` and `~/Tabernacle/tabernacle-os-github`, and
-   `cx33site-retired` in `~/Tabernacle`.
-4. **Hetzner console:** optional final snapshot, then delete `cx33-server`.
-   The hourly Storage Box backup and the dashboard page generator run on that
-   box and end with it.
+`~/Archive/hetzner-2026-10/` (18 GiB, 36,828 files, `SHA256SUMS.txt`; every
+folder size-checked against the box with `rclone check`, the CPX31 tarballs
+re-checked against their original sha256s). Contains `archive/` (cpx31,
+cx33-final-2026-10-09, scriptura-retired-2026-08-14, scouq), `backups/`
+(ophiri-archive, projects, tabernacle-db) and `extra-from-cx33/` (13 verified
+git bundles of the retired Scouq and Tabernacle repos, `loose/` spec file,
+agent-handoffs, Nango compose without secrets).
+Deliberately NOT copied, per Miles: `archive/cpx31/clickhouse.tar.zst` (33.7 GiB
+old ClickHouse real-estate + Avo email data), `archive/nango-secrets-2026-08-14`
+(Nango is unused), `backups/.trash`, `backups/srv` (the CX33 `/srv` mirror,
+already captured in cx33-final). Those exist only on the Storage Box until it is
+cancelled. Scriptura also lives in private `github.com/milesdirmann/scriptura`
+(history scanned for secrets first). There is no second copy of the archive off
+the Mac (Miles: "idk"); GitHub already holds everything that is live.
+
+## Mac cleanup, done 2026-10-12
+
+`Host server` removed from `~/.ssh/config` (backup `config.bak-2026-10-12-cx33`);
+`cx33` git remotes removed from `~/Tabernacle`, `~/Tabernacle/app` and
+`~/Tabernacle/tabernacle-os-github`; the `scriptural` checkout now points at the new
+GitHub repo; the Finder mounts are stopped and `com.hetzner.mounts.plist` is moved to
+`~/Library/LaunchAgents/_disabled/`. `tools/mac/mount-hetzner.sh` is kept only as
+history. `~/.config/rclone/rclone.conf` still holds the `sbox` and `cpx` remotes;
+delete them after the Storage Box is cancelled.
+
+## Steps left for Miles (irreversible; nothing is done until he says yes)
+
+1. **Cloudflare DNS:** delete the A records pointing at `89.167.110.196`
+   (`db.ophiri.com`, `api.scouq.com`, and any others).
+2. **Hetzner console:** delete `cx33-server`. The hourly Storage Box backup and
+   the dashboard page generator run on that box and end with it.
+3. **Hetzner console:** cancel the Storage Box (`u634219`) once the above is
+   confirmed. After that the ClickHouse dump and `backups/srv` are gone for good.
 
 ## Things worth knowing
 
@@ -59,6 +73,3 @@ Also already on the box: `backups/srv`, `backups/tabernacle-db`,
   exists, is private, holds branch `codex/brain-reconciliation-2026-10-09`). Still
   pending Miles: confirm keeping it and set the default branch. The CX33 Git
   replicas (`/srv/scouq/repos/scouq-brain.git`, `scouq-app.git`) are then redundant.
-- Storage Box: holds ~52 GiB that exists nowhere else (archive/cpx31 44.1 GiB,
-  Scriptura 0.70 GiB, cx33-final 1.4 GiB, backups 5.1 GiB). Do not cancel it
-  until Miles decides where long-term archives go.
