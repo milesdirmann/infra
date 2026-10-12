@@ -78,7 +78,8 @@ Measured 2026-10-10 (size / last commit / dirty files / unpushed commits):
   Fix it on the Brain branch via the conflict protocol; add rows for the 09-25
   growth company and the 09-26 integration/dealership direction as archived.
 - `~/.codex/AGENTS.md` names the "CPX31 server copy" `/home/scouq/scouq-brain`.
-  CPX31 is archived. Remove that line and say the Mac Brain is the only copy.
+  CPX31 is archived. Remove that line; the Mac Brain is main and GitHub
+  `Scouq/scouq-brain` is the replica.
 - `~/AGENTS.md` and `~/CLAUDE.md` infra sections are stale (CX33 "hosts Scriptura",
   CPX31 as primary). `~/infra` wins; update after step 5 below.
 - Brain `engineering.md`, `platform-map.md`, `infrastructure.md` mention the CX33
@@ -95,13 +96,13 @@ Supabase dump moved to `db-backup.yml` (secret set by Miles, first run succeeded
 final archive at `sbox:archive/cx33-final-2026-10-09/` (verified); Ophiri, Nango, Dropbox
 mount, `scouq-api` retired.
 
-**Open item you must raise with Miles before the server is deleted:** the Brain
-(`engineering.md`) records Git replicas on the CX33 (`/srv/scouq/repos/scouq-brain.git`
-and `scouq-app.git`, Mac remote `cx33`). `github.com/Scouq/scouq-brain` returns "not
-found", so the Brain's only off-Mac live replica is the CX33. A snapshot is in the
-final archive and the hourly mirror, but nothing will keep it current after deletion.
-Ask Miles where the Brain should be replicated (private repo under `milesdirmann`, or
-the Storage Box), then update `engineering.md` and remove the `cx33` remote.
+**Brain replica (updated 2026-10-11):** the Brain's engineering notes record Git
+replicas on the CX33. A private `github.com/Scouq/scouq-brain` now exists (created
+2026-10-11 with Miles's go, one branch pushed). Pending Miles: confirm keeping it and
+set its default branch. After that, update `engineering.md` and remove the `cx33`
+remote. Separately, the Storage Box holds ~52 GiB with no other copy (CPX31 archive,
+Scriptura, final CX33 archive); do not archive more to it or cancel it until Miles
+decides where long-term archives go.
 
 Steps left for **Miles** (do not do these for him): delete the Cloudflare A records
 for `89.167.110.196` (`db.ophiri.com`, `api.scouq.com`); drop `Host server` from

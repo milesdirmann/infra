@@ -54,5 +54,11 @@ Also already on the box: `backups/srv`, `backups/tabernacle-db`,
 - CI now uses GitHub-hosted minutes. The old workflow comment said the
   self-hosted runner existed to avoid metered minutes; a full run is about
   5 minutes, so watch the private-repo allowance if push volume is high.
-- `~/scouq-brain` has no reachable remote (`github.com/Scouq/scouq-brain`
-  returns not found). Not a CX33 issue, but the Mac copy is now the only live one.
+- `~/scouq-brain` now has an off-Mac replica: private `github.com/Scouq/scouq-brain`,
+  created 2026-10-11 by the Scouq product session with Miles's go (verified: it
+  exists, is private, holds branch `codex/brain-reconciliation-2026-10-09`). Still
+  pending Miles: confirm keeping it and set the default branch. The CX33 Git
+  replicas (`/srv/scouq/repos/scouq-brain.git`, `scouq-app.git`) are then redundant.
+- Storage Box: holds ~52 GiB that exists nowhere else (archive/cpx31 44.1 GiB,
+  Scriptura 0.70 GiB, cx33-final 1.4 GiB, backups 5.1 GiB). Do not cancel it
+  until Miles decides where long-term archives go.
