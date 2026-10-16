@@ -54,6 +54,17 @@ GitHub repo; the Finder mounts are stopped and `com.hetzner.mounts.plist` is mov
 history. `~/.config/rclone/rclone.conf` still holds the `sbox` and `cpx` remotes;
 delete them after the Storage Box is cancelled.
 
+## New blocker found 2026-10-15: Tabernacle Google Ads work runs on the CX33
+
+Seven read-only Ads scripts in `/srv/tabernacle-growth/` (written 2026-10-07 to 10-12, three of
+them after the final archive) use the `google-ads` MCP server configured in
+`/root/.codex/config.toml` (edited 2026-10-12). The Mac's `~/.codex/config.toml` has no such
+entry. Scripts are copied to `~/Archive/hetzner-2026-10/extra-from-cx33/tabernacle-growth/`.
+The MCP credentials were deliberately not copied; before the server goes, either set the
+google-ads MCP up in the Mac Codex config (Miles' call, it moves credentials) or accept that
+the Ads tooling stops. A Codex process (since Aug 15) and `claude agents` (since Aug 29) are also
+still running on the box; their session history is in `/root/.codex` (archived 2026-10-09).
+
 ## Steps left for Miles (irreversible; nothing is done until he says yes)
 
 1. **Cloudflare DNS:** delete the A records pointing at `89.167.110.196`
