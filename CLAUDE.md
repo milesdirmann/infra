@@ -4,11 +4,11 @@ This repo is the source of truth for Miles' personal dev infrastructure:
 runbooks, scripts, and a local HTML dashboard (`dashboard/index.html` — open it
 in a browser; it's the human-facing overview of everything below).
 
-## CX33 is being retired (2026-10-09)
+## CX33 was deleted on 2026-10-15
 
 Everything it ran has moved or been archived; see `docs/cx33-decommission.md`
-for what went where. Archives are on the Mac (`~/Archive/hetzner-2026-10`); only
-Miles' three irreversible steps remain (DNS records, delete the server, cancel the Storage Box). The sections
+for what went where. Archives are on the Mac (`~/Archive/hetzner-2026-10`); what
+remains is Miles' Cloudflare DNS cleanup and cancelling the Storage Box. The sections
 below describe the fleet as it was.
 
 ## Current state (updated 2026-07-19)

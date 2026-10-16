@@ -65,14 +65,25 @@ google-ads MCP up in the Mac Codex config (Miles' call, it moves credentials) or
 the Ads tooling stops. A Codex process (since Aug 15) and `claude agents` (since Aug 29) are also
 still running on the box; their session history is in `/root/.codex` (archived 2026-10-09).
 
-## Steps left for Miles (irreversible; nothing is done until he says yes)
+## Server deleted 2026-10-15
 
-1. **Cloudflare DNS:** delete the A records pointing at `89.167.110.196`
-   (`db.ophiri.com`, `api.scouq.com`, and any others).
-2. **Hetzner console:** delete `cx33-server`. The hourly Storage Box backup and
-   the dashboard page generator run on that box and end with it.
-3. **Hetzner console:** cancel the Storage Box (`u634219`) once the above is
-   confirmed. After that the ClickHouse dump and `backups/srv` are gone for good.
+Miles deleted `cx33-server` in the Hetzner console (IPv4/IPv6 not kept). SSH to
+`89.167.110.196` now times out. A last-minute sweep (before the delete) saved
+`/root/.codex/config.toml` (holds the Google Ads MCP credentials, mode 600), `/root/.claude`,
+and `/srv/tabernacle-growth` to
+`~/Archive/hetzner-2026-10/extra-from-cx33/final-sweep-2026-10-15/`. The Codex session history
+copy there is partial (about 92 MB; the connection dropped mid-copy); the fuller 2026-10-09
+copy is in `archive/cx33-final-2026-10-09/root-dot-codex`.
+
+## Steps left for Miles
+
+1. **Cloudflare DNS:** delete the A records that still point at `89.167.110.196`
+   (`db.ophiri.com`, `api.scouq.com`, any others). The IP can now be reassigned to a stranger.
+2. **Hetzner console:** cancel the Storage Box (`u634219`). Afterwards the ClickHouse dump and
+   `backups/srv` are gone for good; everything else is in `~/Archive/hetzner-2026-10`.
+3. **Google Ads tooling:** decide whether to set up the `google-ads` MCP in the Mac Codex config
+   (the saved `codex-config.toml` has what it needs) or let it go.
+4. After the box is cancelled: delete the `sbox` and `cpx` remotes from `~/.config/rclone/rclone.conf`.
 
 ## Things worth knowing
 
